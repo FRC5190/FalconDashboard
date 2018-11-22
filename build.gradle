@@ -47,7 +47,7 @@ run {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile 'com.github.5190GreenHopeRobotics:FalconLibrary:ba6dbb7'
+    compile 'com.github.5190GreenHopeRobotics:FalconLibrary:master-SNAPSHOT'
     compile 'no.tornado:tornadofx:1.7.17'
 
     compile "org.openjfx:javafx-base:11.0.1:$platform"

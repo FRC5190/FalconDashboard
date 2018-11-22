@@ -1,38 +1,25 @@
 package org.ghrobotics.generator
 
+import javafx.beans.property.SimpleDoubleProperty
+import javafx.geometry.Pos
 import javafx.scene.Parent
+import javafx.stage.StageStyle
+import javafx.util.converter.NumberStringConverter
 import org.ghrobotics.generator.charts.PositionChart
 import org.ghrobotics.generator.charts.VelocityChart
+import org.ghrobotics.generator.fragments.WaypointFragment
 import org.ghrobotics.generator.tables.WaypointsTable
-import org.ghrobotics.lib.mathematics.twodim.trajectory.DefaultTrajectoryGenerator
-import org.ghrobotics.lib.mathematics.units.derivedunits.acceleration
-import org.ghrobotics.lib.mathematics.units.derivedunits.velocity
-import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.meter
 import tornadofx.*
 
 class MainView : View() {
     override val root: Parent = hbox { }
 
     init {
-        Main.waypoints.onChange {
-            val trajectory = DefaultTrajectoryGenerator.generateTrajectory(
-                it.list,
-                listOf(),
-                0.0.meter.velocity,
-                0.0.meter.velocity,
-                10.feet.velocity,
-                4.feet.acceleration,
-                false
-            )
-
-            PositionChart.update(trajectory)
-            VelocityChart.update(trajectory)
-        }
-
         title = "FRC 5190 Trajectory Generator"
+
         with(root) {
-            tabpane {
+
+            this += tabpane {
                 tab("Position") {
                     add(PositionChart)
                     isClosable = false
@@ -42,18 +29,36 @@ class MainView : View() {
                     isClosable = false
                 }
             }
-            vbox {
-                paddingAll = 20.0
-                maxWidth = 300.0
-                add(WaypointsTable(Main.waypoints))
 
+            this += vbox {
+                style {
+                    paddingAll = 20.0
+                    maxWidth = 300.px
+                }
+
+                createTextField("Start Velocity (f/s)", Main.startVelocity)
+                createTextField("End Velocity (f/s)", Main.endVelocity)
+                createTextField("Max Velocity (f/s)", Main.maxVelocity)
+                createTextField("Max Acceleration (f/s/s)", Main.maxAcceleration)
+                createTextField("Max Centripetal Acceleration (f/s/s)", Main.maxCentripetalAcceleration)
+
+                this += WaypointsTable(Main.waypoints)
                 button {
                     text = "Add Waypoint"
-                    setOnMouseClicked {
-                        println("XD")
+                    action {
+                        find<WaypointFragment>().openModal(stageStyle = StageStyle.UTILITY)
                     }
                 }
             }
         }
+    }
+
+    private fun Parent.createTextField(name: String, property: SimpleDoubleProperty) = hbox {
+        paddingAll = 5
+        textfield {
+            bind(property, converter = NumberStringConverter())
+            prefWidth = 50.0
+        }
+        text("    $name") { alignment = Pos.CENTER_LEFT }
     }
 }
