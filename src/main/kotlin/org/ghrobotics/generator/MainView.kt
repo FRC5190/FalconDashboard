@@ -1,10 +1,7 @@
 package org.ghrobotics.generator
 
-import javafx.beans.property.DoublePropertyBase
-import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.stage.StageStyle
-import javafx.util.converter.NumberStringConverter
 import org.ghrobotics.generator.charts.PositionChart
 import org.ghrobotics.generator.charts.VelocityChart
 import org.ghrobotics.generator.fragments.WaypointFragment
@@ -48,11 +45,20 @@ class MainView : View() {
                     maxWidth = 290.0
                 }
 
-                this += WaypointsTable(Main.waypoints)
-                button {
-                    text = "Add Waypoint"
-                    action {
-                        find<WaypointFragment>().openModal(stageStyle = StageStyle.UTILITY)
+                this += WaypointsTable
+
+                hbox {
+                    button {
+                        text = "Add Waypoint"
+                        action {
+                            find<WaypointFragment>().openModal(stageStyle = StageStyle.UTILITY)
+                        }
+                    }
+                    button {
+                        text = "Remove Waypoint"
+                        action {
+                            WaypointsTable.removeSelectedItemIfPossible()
+                        }
                     }
                 }
             }

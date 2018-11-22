@@ -27,13 +27,12 @@ class WaypointFragment : Fragment() {
 
             button {
                 text = "Add"
+                prefWidth = 100.0
                 action {
                     Main.waypoints.add(Pose2d(x.value.feet, y.value.feet, a.value.degree))
                     close()
                 }
             }
-
         }
     }
-
 }

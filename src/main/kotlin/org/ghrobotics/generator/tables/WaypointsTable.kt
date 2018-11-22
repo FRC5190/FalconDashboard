@@ -1,10 +1,10 @@
 package org.ghrobotics.generator.tables
 
 import javafx.beans.property.SimpleObjectProperty
-import javafx.collections.ObservableList
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.util.converter.DoubleStringConverter
+import org.ghrobotics.generator.Main
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.degree
@@ -13,7 +13,7 @@ import tornadofx.column
 import tornadofx.times
 import kotlin.math.round
 
-class WaypointsTable(waypoints: ObservableList<Pose2d>) : TableView<Pose2d>(waypoints) {
+object WaypointsTable : TableView<Pose2d>(Main.waypoints) {
 
     private val columnX = column<Pose2d, Double>("X") {
         SimpleObjectProperty(round(it.value.translation.x.feet * 1E3) / 1E3)
@@ -81,4 +81,8 @@ class WaypointsTable(waypoints: ObservableList<Pose2d>) : TableView<Pose2d>(wayp
         }
     }
 
+    fun removeSelectedItemIfPossible() {
+        val item = selectionModel.selectedItem
+        if (item != null && items.size > 2) Main.waypoints.remove(item)
+    }
 }
