@@ -5,8 +5,6 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.runBlocking
 import org.ghrobotics.generator.Properties
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
@@ -15,9 +13,6 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedTrajectory
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TrajectorySamplePoint
 import org.ghrobotics.lib.mathematics.units.second
-import org.ghrobotics.lib.utils.Source
-import org.ghrobotics.lib.utils.launchFrequency
-import org.ghrobotics.lib.utils.monitor
 import tornadofx.MultiValue
 import tornadofx.data
 import tornadofx.style

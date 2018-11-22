@@ -46,6 +46,13 @@ class MainView : View() {
                 paddingAll = 20.0
                 maxWidth = 300.0
                 add(WaypointsTable(Main.waypoints))
+
+                button {
+                    text = "Add Waypoint"
+                    setOnMouseClicked {
+                        println("XD")
+                    }
+                }
             }
         }
     }

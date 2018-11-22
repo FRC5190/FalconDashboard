@@ -12,8 +12,7 @@ import tornadofx.observable
 
 class Main : App(MainView::class) {
     companion object {
-
-        val kRunContext = newSingleThreadContext("JAVAFX")
+        private val kRunContext = newSingleThreadContext("JAVAFX")
 
         val waypoints = arrayListOf(
             Pose2d(1.5.feet, 23.feet, 0.degree),
@@ -22,9 +21,9 @@ class Main : App(MainView::class) {
 
         @JvmStatic
         fun main(args: Array<String>) {
-           GlobalScope.launch(kRunContext) {
-               launch<Main>(args)
-           }
+            GlobalScope.launch(kRunContext) {
+                launch<Main>(args)
+            }
         }
     }
 }
