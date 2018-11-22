@@ -1,6 +1,6 @@
 package org.ghrobotics.generator
 
-import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.DoublePropertyBase
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.stage.StageStyle
@@ -34,13 +34,19 @@ class MainView : View() {
                 style {
                     paddingAll = 20.0
                     maxWidth = 300.px
+                    spacing = 5.px
                 }
 
-                createTextField("Start Velocity (f/s)", Main.startVelocity)
-                createTextField("End Velocity (f/s)", Main.endVelocity)
-                createTextField("Max Velocity (f/s)", Main.maxVelocity)
-                createTextField("Max Acceleration (f/s/s)", Main.maxAcceleration)
-                createTextField("Max Centripetal Acceleration (f/s/s)", Main.maxCentripetalAcceleration)
+                createNumericalEntry("Start Velocity (f/s)", Main.startVelocity)
+                createNumericalEntry("End Velocity (f/s)", Main.endVelocity)
+                createNumericalEntry("Max Velocity (f/s)", Main.maxVelocity)
+                createNumericalEntry("Max Acceleration (f/s/s)", Main.maxAcceleration)
+                createNumericalEntry("Max Centripetal Acceleration (f/s/s)", Main.maxCentripetalAcceleration)
+
+                button {
+                    text = "Add Velocity Limit Constraint in Region"
+                    maxWidth = 290.0
+                }
 
                 this += WaypointsTable(Main.waypoints)
                 button {
@@ -53,7 +59,7 @@ class MainView : View() {
         }
     }
 
-    private fun Parent.createTextField(name: String, property: SimpleDoubleProperty) = hbox {
+    private fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hbox {
         paddingAll = 5
         textfield {
             bind(property, converter = NumberStringConverter())

@@ -45,8 +45,8 @@ class Main : App(MainView::class) {
         @Synchronized
         private fun update() {
 
-            if (startVelocity.value epsilonEquals 0.0 ||
-                endVelocity.value epsilonEquals 0.0 ||
+            if (startVelocity.value.isNaN() ||
+                endVelocity.value.isNaN()||
                 maxVelocity.value epsilonEquals 0.0 ||
                 maxAcceleration.value epsilonEquals 0.0 ||
                 maxCentripetalAcceleration.value epsilonEquals 0.0
