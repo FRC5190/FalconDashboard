@@ -1,0 +1,63 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.google.gradle:osdetector-gradle-plugin:1.6.0'
+    }
+}
+
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.3.10'
+}
+
+apply plugin: 'com.google.osdetector'
+apply plugin: 'application'
+
+ext.platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
+mainClassName = "org.ghrobotics.generator.Main"
+
+group 'ghrobotics'
+version '1'
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+    maven { url "http://first.wpi.edu/FRC/roborio/maven/release" }
+    maven { url "https://raw.githubusercontent.com/Open-RIO/Maven-Mirror/master/m2" }
+}
+
+compileJava {
+    doFirst {
+        options.compilerArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'javafx.controls'
+        ]
+    }
+}
+
+run {
+    doFirst {
+        jvmArgs = [
+                '--module-path', classpath.asPath,
+                '--add-modules', 'javafx.controls'
+        ]
+    }
+}
+
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    compile 'com.github.5190GreenHopeRobotics:FalconLibrary:ba6dbb7'
+    compile 'no.tornado:tornadofx:1.7.17'
+
+    compile "org.openjfx:javafx-base:11.0.1:$platform"
+    compile "org.openjfx:javafx-graphics:11.0.1:$platform"
+    compile "org.openjfx:javafx-controls:11.0.1:$platform"
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
