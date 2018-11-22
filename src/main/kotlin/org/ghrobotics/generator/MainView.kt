@@ -58,13 +58,4 @@ class MainView : View() {
             }
         }
     }
-
-    private fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hbox {
-        paddingAll = 5
-        textfield {
-            bind(property, converter = NumberStringConverter())
-            prefWidth = 50.0
-        }
-        text("    $name") { alignment = Pos.CENTER_LEFT }
-    }
 }
