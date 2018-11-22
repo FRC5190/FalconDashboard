@@ -1,6 +1,8 @@
 package org.ghrobotics.generator
 
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
+import javafx.beans.property.SimpleStringProperty
 import org.ghrobotics.generator.charts.PositionChart
 import org.ghrobotics.generator.charts.VelocityChart
 import org.ghrobotics.lib.mathematics.epsilonEquals
@@ -24,6 +26,9 @@ class Main : App(MainView::class) {
             Pose2d(11.5.feet, 23.feet, 0.degree)
         ).observable()
 
+        val name = SimpleStringProperty("Baseline")
+
+        val reversed = SimpleBooleanProperty(false)
         val startVelocity = SimpleDoubleProperty(0.0)
         val endVelocity = SimpleDoubleProperty(0.0)
         val maxVelocity = SimpleDoubleProperty(10.0)
@@ -33,6 +38,8 @@ class Main : App(MainView::class) {
         init {
             update()
             waypoints.onChange { update() }
+
+            reversed.onChange { update() }
 
             startVelocity.onChange { update() }
             endVelocity.onChange { update() }
@@ -59,7 +66,7 @@ class Main : App(MainView::class) {
                 endVelocity = endVelocity.value.feet.velocity,
                 maxVelocity = maxVelocity.value.feet.velocity,
                 maxAcceleration = maxAcceleration.value.feet.acceleration,
-                reversed = false
+                reversed = reversed.value
             )
             PositionChart.update(trajectory)
             VelocityChart.update(trajectory)

@@ -1,9 +1,14 @@
 package org.ghrobotics.generator
 
+import javafx.geometry.Pos
 import javafx.scene.Parent
+import javafx.scene.control.ContentDisplay
 import javafx.stage.StageStyle
+import javafx.util.converter.NumberStringConverter
+import org.ghrobotics.generator.Main.Companion.name
 import org.ghrobotics.generator.charts.PositionChart
 import org.ghrobotics.generator.charts.VelocityChart
+import org.ghrobotics.generator.fragments.CodeFragment
 import org.ghrobotics.generator.fragments.WaypointFragment
 import org.ghrobotics.generator.tables.WaypointsTable
 import tornadofx.*
@@ -34,6 +39,20 @@ class MainView : View() {
                     spacing = 5.px
                 }
 
+                hbox {
+                    paddingAll = 5
+                    textfield {
+                        bind(Main.name)
+                        prefWidth = 290.0
+                    }
+                }
+
+                checkbox {
+                    paddingAll = 5
+                    text = "Reversed"
+                    bind(Main.reversed)
+                }
+
                 createNumericalEntry("Start Velocity (f/s)", Main.startVelocity)
                 createNumericalEntry("End Velocity (f/s)", Main.endVelocity)
                 createNumericalEntry("Max Velocity (f/s)", Main.maxVelocity)
@@ -47,17 +66,27 @@ class MainView : View() {
 
                 this += WaypointsTable
 
-                hbox {
+                vbox {
+                    spacing = 5.0
                     button {
+                        prefWidth = 290.0
                         text = "Add Waypoint"
                         action {
                             find<WaypointFragment>().openModal(stageStyle = StageStyle.UTILITY)
                         }
                     }
                     button {
+                        prefWidth = 290.0
                         text = "Remove Waypoint"
                         action {
                             WaypointsTable.removeSelectedItemIfPossible()
+                        }
+                    }
+                    button {
+                        prefWidth = 290.0
+                        text = "Generate"
+                        action {
+                            find<CodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
                         }
                     }
                 }
