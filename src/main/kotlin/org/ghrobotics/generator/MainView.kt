@@ -1,11 +1,7 @@
 package org.ghrobotics.generator
 
-import javafx.geometry.Pos
 import javafx.scene.Parent
-import javafx.scene.control.ContentDisplay
 import javafx.stage.StageStyle
-import javafx.util.converter.NumberStringConverter
-import org.ghrobotics.generator.Main.Companion.name
 import org.ghrobotics.generator.charts.PositionChart
 import org.ghrobotics.generator.charts.VelocityChart
 import org.ghrobotics.generator.fragments.CodeFragment
@@ -54,8 +50,8 @@ class MainView : View() {
                 }
                 checkbox {
                     paddingAll = 5
-                    text = "PathFinder (Experimental)"
-                    bind(Main.pathfinder)
+                    text = "Auto Path Finding (Experimental)"
+                    bind(Main.autoPathFinding)
                 }
 
                 createNumericalEntry("Start Velocity (f/s)", Main.startVelocity)

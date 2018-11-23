@@ -30,7 +30,7 @@ class Main : App(MainView::class) {
         val name = SimpleStringProperty("Baseline")
 
         val reversed = SimpleBooleanProperty(false)
-        val pathfinder = SimpleBooleanProperty(false)
+        val autoPathFinding = SimpleBooleanProperty(false)
         val startVelocity = SimpleDoubleProperty(0.0)
         val endVelocity = SimpleDoubleProperty(0.0)
         val maxVelocity = SimpleDoubleProperty(10.0)
@@ -42,7 +42,7 @@ class Main : App(MainView::class) {
             waypoints.onChange { update() }
 
             reversed.onChange { update() }
-            pathfinder.onChange { update() }
+            autoPathFinding.onChange { update() }
 
             startVelocity.onChange { update() }
             endVelocity.onChange { update() }
@@ -62,7 +62,7 @@ class Main : App(MainView::class) {
                 maxCentripetalAcceleration.value epsilonEquals 0.0
             ) return
 
-            val wayPoints = if (pathfinder.value) {
+            val wayPoints = if (autoPathFinding.value) {
                 val pathFinder = PathFinder(
                     3.5.feet,
                     PathFinder.k2018CubesSwitch,
