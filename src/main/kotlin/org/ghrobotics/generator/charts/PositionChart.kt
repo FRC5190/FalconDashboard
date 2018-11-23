@@ -3,6 +3,7 @@ package org.ghrobotics.generator.charts
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
+import javafx.scene.control.Tooltip
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import org.ghrobotics.generator.Properties
@@ -16,6 +17,7 @@ import org.ghrobotics.lib.mathematics.units.second
 import tornadofx.MultiValue
 import tornadofx.data
 import tornadofx.style
+import java.text.DecimalFormat
 
 object PositionChart : LineChart<Number, Number>(
     NumberAxis(0.0, 54.0, 1.0),
@@ -53,11 +55,24 @@ object PositionChart : LineChart<Number, Number>(
                 val point: TrajectorySamplePoint<TimedEntry<Pose2dWithCurvature>> = iterator.advance(0.02.second)
                 data(
                     point.state.state.pose.translation.x.feet,
-                    point.state.state.pose.translation.y.feet
+                    point.state.state.pose.translation.y.feet,
+                    point.state.state.pose.rotation.degree
                 )
             }
             this@PositionChart.data.add(this)
+
+            data.forEach { entry ->
+                val format = DecimalFormat("##.##")
+
+                val x = format.format(entry.xValue)
+                val y = format.format(entry.yValue)
+                val a = format.format(entry.extraValue)
+
+                val t = Tooltip("$x feet, $y feet, $a degrees")
+                Tooltip.install(entry.node, t)
+            }
         }
+
 
         with(seriesRobotStart) {
             getRobotBoundingBox(trajectory.firstState.state.pose).forEach {
