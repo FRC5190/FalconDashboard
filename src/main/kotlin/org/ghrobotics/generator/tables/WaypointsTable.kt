@@ -1,10 +1,15 @@
 package org.ghrobotics.generator.tables
 
 import javafx.beans.property.SimpleObjectProperty
+import javafx.scene.control.TableRow
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.TextFieldTableCell
+import javafx.scene.input.ClipboardContent
+import javafx.scene.input.DataFormat
+import javafx.scene.input.TransferMode
 import javafx.util.converter.DoubleStringConverter
 import org.ghrobotics.generator.Main
+import org.ghrobotics.generator.tables.WaypointsTable.setRowFactory
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.degree
@@ -74,10 +79,56 @@ object WaypointsTable : TableView<Pose2d>(Main.waypoints) {
             }
         }
 
-
         columns.forEach {
             it.prefWidthProperty().bind(widthProperty() * 0.28)
             it.isResizable = false
+        }
+
+        setRowFactory { _ ->
+            val row = TableRow<Pose2d>()
+
+            row.setOnDragDetected {
+                if (!row.isEmpty) {
+                    val index = row.index
+                    val db = startDragAndDrop(TransferMode.MOVE)
+                    db.dragView = row.snapshot(null, null)
+
+                    val cc = ClipboardContent()
+                    cc.putString(index.toString())
+                    db.setContent(cc)
+                    it.consume()
+                }
+            }
+
+            row.setOnDragOver {
+                if (it.dragboard.hasString()) {
+                    if (row.index != it.dragboard.getContent(DataFormat.PLAIN_TEXT).toString().toInt()) {
+                        it.acceptTransferModes(*TransferMode.COPY_OR_MOVE)
+                        it.consume()
+                    }
+                }
+                it.consume()
+            }
+
+            row.setOnDragDropped {
+                val db = it.dragboard
+                if (db.hasString()) {
+                    val dragIndex = db.getContent(DataFormat.PLAIN_TEXT).toString().toInt()
+                    val dropIndex = if (row.isEmpty) {
+                        this@WaypointsTable.items.size
+                    } else row.index
+
+                    if (this@WaypointsTable.items.size > 2) {
+                        it.isDropCompleted = true
+                        this@WaypointsTable.items.add(dropIndex, this@WaypointsTable.items.removeAt(dragIndex))
+                        it.consume()
+                    } else {
+                        this@WaypointsTable.items.reverse()
+                    }
+
+                }
+            }
+            return@setRowFactory row
         }
     }
 
