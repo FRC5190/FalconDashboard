@@ -119,15 +119,12 @@ object WaypointsTable : TableView<Pose2d>(Main.waypoints) {
                     } else row.index
 
                     if (this@WaypointsTable.items.size > 2) {
-                        it.isDropCompleted = true
                         this@WaypointsTable.items.add(dropIndex, this@WaypointsTable.items.removeAt(dragIndex))
-                        it.consume()
                     } else {
-                        it.isDropCompleted = true
                         this@WaypointsTable.items.reverse()
-                        it.consume()
                     }
-
+                    it.isDropCompleted = true
+                    it.consume()
                 }
             }
             return@setRowFactory row
