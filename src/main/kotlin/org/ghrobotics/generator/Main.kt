@@ -8,6 +8,7 @@ import org.ghrobotics.generator.charts.VelocityChart
 import org.ghrobotics.lib.mathematics.epsilonEquals
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.DefaultTrajectoryGenerator
+import org.ghrobotics.lib.mathematics.twodim.trajectory.PathFinder
 import org.ghrobotics.lib.mathematics.twodim.trajectory.constraints.CentripetalAccelerationConstraint
 import org.ghrobotics.lib.mathematics.units.degree
 import org.ghrobotics.lib.mathematics.units.derivedunits.acceleration
@@ -29,6 +30,7 @@ class Main : App(MainView::class) {
         val name = SimpleStringProperty("Baseline")
 
         val reversed = SimpleBooleanProperty(false)
+        val pathfinder = SimpleBooleanProperty(false)
         val startVelocity = SimpleDoubleProperty(0.0)
         val endVelocity = SimpleDoubleProperty(0.0)
         val maxVelocity = SimpleDoubleProperty(10.0)
@@ -40,6 +42,7 @@ class Main : App(MainView::class) {
             waypoints.onChange { update() }
 
             reversed.onChange { update() }
+            pathfinder.onChange { update() }
 
             startVelocity.onChange { update() }
             endVelocity.onChange { update() }
@@ -53,14 +56,29 @@ class Main : App(MainView::class) {
         private fun update() {
 
             if (startVelocity.value.isNaN() ||
-                endVelocity.value.isNaN()||
+                endVelocity.value.isNaN() ||
                 maxVelocity.value epsilonEquals 0.0 ||
                 maxAcceleration.value epsilonEquals 0.0 ||
                 maxCentripetalAcceleration.value epsilonEquals 0.0
             ) return
 
+            val wayPoints = if (pathfinder.value) {
+                val pathFinder = PathFinder(
+                    3.5.feet,
+                    PathFinder.k2018CubesSwitch,
+                    PathFinder.k2018LeftSwitch,
+                    PathFinder.k2018Platform
+                )
+                Main.waypoints.zipWithNext { start, end ->
+                    kotlin.runCatching {
+                        pathFinder.findPath(start, end)!!
+                    }.recover { listOf(start, end) }
+                        .getOrThrow()
+                }.flatten().toSet().toList()
+            } else Main.waypoints.toList()
+
             val trajectory = DefaultTrajectoryGenerator.generateTrajectory(
-                wayPoints = Main.waypoints.toList(),
+                wayPoints = wayPoints,
                 constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value.feet.acceleration)),
                 startVelocity = startVelocity.value.feet.velocity,
                 endVelocity = endVelocity.value.feet.velocity,

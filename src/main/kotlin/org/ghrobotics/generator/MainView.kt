@@ -52,6 +52,11 @@ class MainView : View() {
                     text = "Reversed"
                     bind(Main.reversed)
                 }
+                checkbox {
+                    paddingAll = 5
+                    text = "PathFinder (Experimental)"
+                    bind(Main.pathfinder)
+                }
 
                 createNumericalEntry("Start Velocity (f/s)", Main.startVelocity)
                 createNumericalEntry("End Velocity (f/s)", Main.endVelocity)
