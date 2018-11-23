@@ -123,7 +123,9 @@ object WaypointsTable : TableView<Pose2d>(Main.waypoints) {
                         this@WaypointsTable.items.add(dropIndex, this@WaypointsTable.items.removeAt(dragIndex))
                         it.consume()
                     } else {
+                        it.isDropCompleted = true
                         this@WaypointsTable.items.reverse()
+                        it.consume()
                     }
 
                 }
