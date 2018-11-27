@@ -1,4 +1,4 @@
-package org.ghrobotics.generator.charts
+package org.ghrobotics.falcondashboard.generator.charts
 
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis

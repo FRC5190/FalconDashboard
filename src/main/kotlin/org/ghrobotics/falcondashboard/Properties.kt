@@ -1,4 +1,4 @@
-package org.ghrobotics.generator
+package org.ghrobotics.falcondashboard
 
 import org.ghrobotics.lib.mathematics.units.inch
 

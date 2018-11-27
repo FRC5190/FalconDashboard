@@ -15,13 +15,14 @@ apply plugin: 'com.google.osdetector'
 apply plugin: 'application'
 
 ext.platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
-mainClassName = "org.ghrobotics.generator.Main"
+mainClassName = "org.ghrobotics.falcondashboard.Main"
 
 group 'ghrobotics'
 version '1'
 
 repositories {
     mavenCentral()
+    jcenter()
     maven { url "https://jitpack.io" }
     maven { url "http://first.wpi.edu/FRC/roborio/maven/release" }
     maven { url "https://raw.githubusercontent.com/Open-RIO/Maven-Mirror/master/m2" }
@@ -31,7 +32,9 @@ compileJava {
     doFirst {
         options.compilerArgs = [
                 '--module-path', classpath.asPath,
-                '--add-modules', 'javafx.controls'
+                '--add-modules', 'javafx.controls',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED'
         ]
     }
 }
@@ -40,7 +43,9 @@ run {
     doFirst {
         jvmArgs = [
                 '--module-path', classpath.asPath,
-                '--add-modules', 'javafx.controls'
+                '--add-modules', 'javafx.controls',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control=ALL-UNNAMED',
+                '--add-exports', 'javafx.controls/com.sun.javafx.scene.control.behavior=ALL-UNNAMED'
         ]
     }
 }
@@ -53,6 +58,10 @@ dependencies {
     compile "org.openjfx:javafx-base:11.0.1:$platform"
     compile "org.openjfx:javafx-graphics:11.0.1:$platform"
     compile "org.openjfx:javafx-controls:11.0.1:$platform"
+
+    // Material Theme
+    compile 'com.jfoenix:jfoenix:9.0.6'
+    compile("com.github.bkenn:kfoenix:0.1.3")
 }
 
 compileKotlin {

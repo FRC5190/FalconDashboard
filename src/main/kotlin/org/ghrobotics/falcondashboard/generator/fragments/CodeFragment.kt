@@ -1,7 +1,7 @@
-package org.ghrobotics.generator.fragments
+package org.ghrobotics.falcondashboard.generator.fragments
 
 import javafx.scene.text.Font
-import org.ghrobotics.generator.Main
+import org.ghrobotics.falcondashboard.generator.GeneratorView
 import tornadofx.Fragment
 import tornadofx.hbox
 import tornadofx.paddingAll
@@ -14,16 +14,16 @@ class CodeFragment : Fragment() {
 
         val builder = StringBuilder()
         builder.append("val ")
-        builder.append(Main.name.value.decapitalize().replace("\\s".toRegex(), ""))
+        builder.append(GeneratorView.name.value.decapitalize().replace("\\s".toRegex(), ""))
         builder.append(" = ")
         builder.append("waypoints(\n")
-        Main.waypoints.toList().forEach {
+        GeneratorView.waypoints.toList().forEach {
             builder.append("    Pose2d(${it.translation.x.feet}.feet, ${it.translation.y.feet}.feet, ${it.rotation.degree}.degree)\n")
         }
         builder.append(
-            ").generateTrajectory(\n    \"${Main.name.value}\",\n    ${Main.reversed.value},\n" +
-                    "    ${Main.maxVelocity.value}.feet.velocity,\n    ${Main.maxAcceleration.value}.feet.acceleration,\n" +
-                    "    listOf(CentripetalAccelerationConstraint(${Main.maxCentripetalAcceleration.value}.feet.acceleration)\n)"
+            ").generateTrajectory(\n    \"${GeneratorView.name.value}\",\n    ${GeneratorView.reversed.value},\n" +
+                "    ${GeneratorView.maxVelocity.value}.feet.velocity,\n    ${GeneratorView.maxAcceleration.value}.feet.acceleration,\n" +
+                "    listOf(CentripetalAccelerationConstraint(${GeneratorView.maxCentripetalAcceleration.value}.feet.acceleration)\n)"
         )
 
         with(root) {

@@ -1,4 +1,4 @@
-package org.ghrobotics.generator.charts
+package org.ghrobotics.falcondashboard.generator.charts
 
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
@@ -6,7 +6,7 @@ import javafx.scene.chart.XYChart
 import javafx.scene.control.Tooltip
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
-import org.ghrobotics.generator.Properties
+import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
@@ -34,7 +34,7 @@ object PositionChart : LineChart<Number, Number>(
                 "-fx-background-position: top right;" +
                 "-fx-background-repeat: no-repeat;"
 
-        setMinSize(54 * 25.0, 27 * 25.0)
+        setMinSize(54 * 20.0, 27 * 20.0)
 
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false

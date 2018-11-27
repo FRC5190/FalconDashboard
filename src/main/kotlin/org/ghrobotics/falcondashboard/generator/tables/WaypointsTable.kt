@@ -1,4 +1,4 @@
-package org.ghrobotics.generator.tables
+package org.ghrobotics.falcondashboard.generator.tables
 
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.TableRow
@@ -8,8 +8,8 @@ import javafx.scene.input.ClipboardContent
 import javafx.scene.input.DataFormat
 import javafx.scene.input.TransferMode
 import javafx.util.converter.DoubleStringConverter
-import org.ghrobotics.generator.Main
-import org.ghrobotics.generator.tables.WaypointsTable.setRowFactory
+import org.ghrobotics.falcondashboard.generator.GeneratorView
+import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable.setRowFactory
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.degree
@@ -18,7 +18,7 @@ import tornadofx.column
 import tornadofx.times
 import kotlin.math.round
 
-object WaypointsTable : TableView<Pose2d>(Main.waypoints) {
+object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
 
     private val columnX = column<Pose2d, Double>("X") {
         SimpleObjectProperty(round(it.value.translation.x.feet * 1E3) / 1E3)
@@ -133,6 +133,6 @@ object WaypointsTable : TableView<Pose2d>(Main.waypoints) {
 
     fun removeSelectedItemIfPossible() {
         val item = selectionModel.selectedItem
-        if (item != null && items.size > 2) Main.waypoints.remove(item)
+        if (item != null && items.size > 2) GeneratorView.waypoints.remove(item)
     }
 }
