@@ -8,6 +8,9 @@ import tornadofx.hbox
 import tornadofx.launch
 
 class Main : App(MainView::class) {
+    init {
+        Network
+    }
     companion object {
         @JvmStatic
         fun main(args: Array<String>) {

@@ -52,17 +52,24 @@ run {
 }
 
 dependencies {
+    // Kotlin Standard Library
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    compile 'com.github.5190GreenHopeRobotics:FalconLibrary:master-SNAPSHOT'
-    compile 'no.tornado:tornadofx:1.7.17'
 
+    // FRC Specific Libraries
+    compile 'com.github.5190GreenHopeRobotics:FalconLibrary:master-SNAPSHOT'
+    runtime "edu.wpi.first.ntcore:ntcore-jni:4.1.0:all"
+    
+    // TornadoFX
+    compile 'no.tornado:tornadofx:1.7.17'
+    
+    // JavaFX
     compile "org.openjfx:javafx-base:11.0.1:$platform"
     compile "org.openjfx:javafx-graphics:11.0.1:$platform"
     compile "org.openjfx:javafx-controls:11.0.1:$platform"
 
     // Material Theme
-    compile 'com.jfoenix:jfoenix:9.0.6'
-    compile("com.github.bkenn:kfoenix:0.1.3")
+    compile "com.jfoenix:jfoenix:9.0.6"
+    compile "com.github.bkenn:kfoenix:0.1.3"
 }
 
 compileKotlin {
