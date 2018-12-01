@@ -19,7 +19,7 @@ class Main : App(MainView::class) {
     }
 }
 
-class MainView : View("FRC 5190 Trajectory Generator") {
+class MainView : View("FRC 5190 Falcon Dashboard") {
     override val root: Parent = jfxtabpane {
         stylesheets += resources["/AppStyle.css"]
         tab("Generator") {
