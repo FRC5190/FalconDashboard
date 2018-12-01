@@ -28,16 +28,7 @@ import tornadofx.*
 class GeneratorView : View() {
 
     override val root = hbox {
-        jfxtabpane {
-            tab("Position") {
-                add(PositionChart)
-                isClosable = false
-            }
-            tab("Velocity") {
-                add(VelocityChart)
-                isClosable = false
-            }
-        }
+        stylesheets += resources["/GeneratorStyle.css"]
         vbox {
             style {
                 paddingAll = 20.0
@@ -100,6 +91,16 @@ class GeneratorView : View() {
                         find<CodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
                     }
                 }
+            }
+        }
+        jfxtabpane {
+            tab("Position") {
+                add(PositionChart)
+                isClosable = false
+            }
+            tab("Velocity") {
+                add(VelocityChart)
+                isClosable = false
             }
         }
     }

@@ -34,7 +34,9 @@ object PositionChart : LineChart<Number, Number>(
                 "-fx-background-position: top right;" +
                 "-fx-background-repeat: no-repeat;"
 
-        setMinSize(54 * 20.0, 27 * 20.0)
+        setMinSize(54 * 25.0, 28 * 25.0)
+        setPrefSize(54 * 25.0, 28 * 25.0)
+        setMaxSize(54 * 25.0, 28 * 25.0)
 
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
