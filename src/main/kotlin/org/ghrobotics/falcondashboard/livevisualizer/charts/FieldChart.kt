@@ -5,16 +5,20 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import tornadofx.*
+import tornadofx.MultiValue
+import tornadofx.style
 
 object FieldChart : LineChart<Number, Number>(
     NumberAxis(0.0, 54.0, 1.0),
     NumberAxis(0.0, 27.0, 1.0)
 ) {
 
-    private val mainSeries = XYChart.Series<Number, Number>()
+    private val robotSeries = XYChart.Series<Number, Number>()
+    private val pathSeries = XYChart.Series<Number, Number>()
+    private val robotBoundingBoxSeries = XYChart.Series<Number, Number>()
 
     init {
         style {
@@ -32,17 +36,50 @@ object FieldChart : LineChart<Number, Number>(
 
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
-        animated = true
+        animated = false
+        createSymbols = false
 
-        data.add(mainSeries)
+        data.add(robotSeries)
+        data.add(pathSeries)
+        data.add(robotBoundingBoxSeries)
     }
 
-    fun update(robotPose: Pose2d) {
-        mainSeries.data.add(XYChart.Data(robotPose.translation.x.feet, robotPose.translation.y.feet))
+    fun updateRobot(robotPose: Pose2d) {
+        robotSeries.data.add(XYChart.Data(robotPose.translation.x.feet, robotPose.translation.y.feet))
+        robotBoundingBoxSeries.data.clear()
+        getRobotBoundingBox(robotPose).forEach {
+            robotBoundingBoxSeries.data.add(
+                XYChart.Data(it.translation.x.feet, it.translation.y.feet)
+            )
+        }
+    }
+
+    fun updatePath(pathPose: Pose2d) {
+        pathSeries.data.add(XYChart.Data(pathPose.translation.x.feet, pathPose.translation.y.feet))
+    }
+
+    private fun getRobotBoundingBox(center: Pose2d): Array<Pose2d> {
+        val tl = center.transformBy(
+            Pose2d(Translation2d(-Properties.robotLength / 2, Properties.robotWidth / 2))
+        )
+
+        val tr = center.transformBy(
+            Pose2d(Translation2d(Properties.robotLength / 2, Properties.robotWidth / 2))
+        )
+
+        val bl = center.transformBy(
+            Pose2d(Translation2d(-Properties.robotLength / 2, -Properties.robotWidth / 2))
+        )
+
+        val br = center.transformBy(
+            Pose2d(Translation2d(Properties.robotLength / 2, -Properties.robotWidth / 2))
+        )
+        return arrayOf(tl, tr, br, bl, tl)
     }
 
     fun clear() {
-        mainSeries.data.clear()
+        robotSeries.data.clear()
+        pathSeries.data.clear()
     }
 }
 

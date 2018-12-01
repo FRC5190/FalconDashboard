@@ -19,12 +19,21 @@ object Network {
                 LiveDashboard.robotHeading.radian
             )
 
+            val pathPose = Pose2d(
+                LiveDashboard.pathX.feet,
+                LiveDashboard.pathY.feet,
+                LiveDashboard.pathHeading.radian
+            )
+
             if (LiveDashboard.pathReset) {
                 LiveDashboard.pathReset = false
                 Platform.runLater { FieldChart.clear() }
             }
 
-            Platform.runLater { FieldChart.update(robotPose) }
+            Platform.runLater {
+                FieldChart.updateRobot(robotPose)
+                FieldChart.updatePath(pathPose)
+            }
         }
     }
 }
