@@ -1,6 +1,5 @@
 package org.ghrobotics.falcondashboard
 
-import javafx.application.Platform
 import kotlinx.coroutines.GlobalScope
 import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
 import org.ghrobotics.lib.debug.LiveDashboard
@@ -27,10 +26,10 @@ object Network {
 
             if (LiveDashboard.pathReset) {
                 LiveDashboard.pathReset = false
-                Platform.runLater { FieldChart.clear() }
+                ui { FieldChart.clear() }
             }
 
-            Platform.runLater {
+            ui {
                 FieldChart.updateRobot(robotPose)
                 FieldChart.updatePath(pathPose)
             }

@@ -1,5 +1,6 @@
 package org.ghrobotics.falcondashboard
 
+import javafx.application.Platform
 import javafx.beans.property.DoublePropertyBase
 import javafx.geometry.Pos
 import javafx.scene.Parent
@@ -14,4 +15,8 @@ fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hb
         prefWidth = 50.0
     }
     text("    $name") { alignment = Pos.CENTER_LEFT }
+}
+
+fun ui(block: () -> Unit) {
+    Platform.runLater(block)
 }
