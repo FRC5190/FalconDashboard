@@ -1,8 +1,8 @@
 package org.ghrobotics.falcondashboard.generator.fragments
 
 import javafx.scene.text.Font
+import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
-import org.ghrobotics.falcondashboard.generator.GeneratorView.Settings
 import tornadofx.Fragment
 import tornadofx.hbox
 import tornadofx.paddingAll
@@ -23,8 +23,8 @@ class CodeFragment : Fragment() {
         }
         builder.append(
             ").generateTrajectory(\n    \"${Settings.name.value}\",\n    ${Settings.reversed.value},\n" +
-                "    ${Settings.maxVelocity.value}.feet.velocity,\n    ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
-                "    listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration)\n)"
+                    "    ${Settings.maxVelocity.value}.feet.velocity,\n    ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
+                    "    listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration)\n)"
         )
 
         with(root) {

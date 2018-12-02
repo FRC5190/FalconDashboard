@@ -1,15 +1,16 @@
 package org.ghrobotics.falcondashboard
 
-import org.ghrobotics.falcondashboard.generator.GeneratorView
-import tornadofx.*
+import tornadofx.App
+import tornadofx.launch
 
 class Main : App(MainView::class) {
     init {
+        Settings
         Network
     }
 
     override fun stop() {
-        GeneratorView.saveSettings()
+        Settings.save()
     }
 
     companion object {

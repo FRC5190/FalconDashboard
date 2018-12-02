@@ -10,7 +10,7 @@ import org.ghrobotics.lib.utils.launchFrequency
 
 object Network {
     init {
-        LiveDashboard.liveDashboardTable.instance.startClient("127.0.1.1")
+        LiveDashboard.liveDashboardTable.instance.startClient(Settings.ip.value)
         GlobalScope.launchFrequency(50) {
             val robotPose = Pose2d(
                 LiveDashboard.robotX.feet,
