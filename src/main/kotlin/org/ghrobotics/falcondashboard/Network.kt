@@ -9,8 +9,13 @@ import org.ghrobotics.lib.mathematics.units.radian
 import org.ghrobotics.lib.utils.launchFrequency
 
 object Network {
+
     init {
         LiveDashboard.liveDashboardTable.instance.startClient(Settings.ip.value)
+
+        var lastRobotPose: Pose2d? = null
+        var lastPathPose: Pose2d? = null
+
         GlobalScope.launchFrequency(50) {
             val robotPose = Pose2d(
                 LiveDashboard.robotX.feet,
@@ -27,11 +32,19 @@ object Network {
             if (LiveDashboard.pathReset) {
                 LiveDashboard.pathReset = false
                 ui { FieldChart.clear() }
-            }
+                lastRobotPose = null
+                lastPathPose = null
+            } else {
+                val updateRobotPose = robotPose != lastRobotPose
+                val updatePathPose = pathPose != lastPathPose
 
-            ui {
-                FieldChart.updateRobot(robotPose)
-                FieldChart.updatePath(pathPose)
+                ui {
+                    if (updateRobotPose) FieldChart.addRobotPose(robotPose)
+                    if (updatePathPose) FieldChart.addPathPose(pathPose)
+                }
+
+                lastRobotPose = robotPose
+                lastPathPose = pathPose
             }
         }
     }
