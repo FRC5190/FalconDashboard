@@ -1,5 +1,6 @@
 package org.ghrobotics.falcondashboard.generator
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.stage.StageStyle
 import kfoenix.jfxbutton
 import kfoenix.jfxcheckbox
@@ -116,6 +117,7 @@ class GeneratorView : View() {
             Pose2d(11.5.feet, 23.feet, 0.degree)
         ).observable()
 
+        val trajectory = SimpleObjectProperty(DefaultTrajectoryGenerator.baseline)
 
         init {
             update()
@@ -154,17 +156,19 @@ class GeneratorView : View() {
                 }.flatten().toSet().toList()
             } else waypoints.toList()
 
-            val trajectory = DefaultTrajectoryGenerator.generateTrajectory(
-                wayPoints = wayPoints,
-                constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value.feet.acceleration)),
-                startVelocity = startVelocity.value.feet.velocity,
-                endVelocity = endVelocity.value.feet.velocity,
-                maxVelocity = maxVelocity.value.feet.velocity,
-                maxAcceleration = maxAcceleration.value.feet.acceleration,
-                reversed = reversed.value
+            this.trajectory.set(
+                DefaultTrajectoryGenerator.generateTrajectory(
+                    wayPoints = wayPoints,
+                    constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value.feet.acceleration)),
+                    startVelocity = startVelocity.value.feet.velocity,
+                    endVelocity = endVelocity.value.feet.velocity,
+                    maxVelocity = maxVelocity.value.feet.velocity,
+                    maxAcceleration = maxAcceleration.value.feet.acceleration,
+                    reversed = reversed.value
+                )
             )
-            PositionChart.update(trajectory)
-            VelocityChart.update(trajectory)
+
+            //VelocityChart.update(trajectory)
         }
     }
 }

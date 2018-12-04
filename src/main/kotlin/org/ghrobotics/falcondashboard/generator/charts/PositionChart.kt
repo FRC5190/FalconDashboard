@@ -7,32 +7,38 @@ import javafx.scene.control.Tooltip
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import org.ghrobotics.falcondashboard.Properties
+import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedTrajectory
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TrajectorySamplePoint
+import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.second
 import tornadofx.MultiValue
 import tornadofx.data
 import tornadofx.style
-import java.text.DecimalFormat
 
 object PositionChart : LineChart<Number, Number>(
     NumberAxis(0.0, 54.0, 1.0),
     NumberAxis(0.0, 27.0, 1.0)
 ) {
 
+    private val seriesXY = XYChart.Series<Number, Number>()
+    private val seriesRobotStart = XYChart.Series<Number, Number>()
+    private val seriesRobotEnd = XYChart.Series<Number, Number>()
+    private val seriesWayPoints = XYChart.Series<Number, Number>()
+
     init {
         style {
             backgroundColor = MultiValue(arrayOf<Paint>(Color.LIGHTGRAY))
         }
         lookup(".chart-plot-background").style +=
-                "-fx-background-image: url(\"chart-background.png\");" +
-                "-fx-background-size: stretch;" +
-                "-fx-background-position: top right;" +
-                "-fx-background-repeat: no-repeat;"
+            "-fx-background-image: url(\"chart-background.png\");" +
+            "-fx-background-size: stretch;" +
+            "-fx-background-position: top right;" +
+            "-fx-background-repeat: no-repeat;"
 
         setMinSize(54 * 25.0, 28 * 25.0)
         setPrefSize(54 * 25.0, 28 * 25.0)
@@ -41,55 +47,90 @@ object PositionChart : LineChart<Number, Number>(
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
         animated = false
+
+        data.add(seriesXY)
+        data.add(seriesRobotStart)
+        data.add(seriesRobotEnd)
+        data.add(seriesWayPoints)
+
+        update(GeneratorView.trajectory.value)
+        updateWaypoints(GeneratorView.waypoints)
+        GeneratorView.trajectory.addListener { _, _, trajectory ->
+            update(trajectory)
+            updateWaypoints(GeneratorView.waypoints)
+        }
     }
 
-    fun update(trajectory: TimedTrajectory<Pose2dWithCurvature>) {
-        data.clear()
+    private fun updateWaypoints(wayPoints: List<Pose2d>) {
+        seriesWayPoints.data.clear()
+        wayPoints.forEach { pose2d ->
+            seriesWayPoints.data(
+                pose2d.translation.x.feet,
+                pose2d.translation.y.feet,
+                pose2d.rotation.degree
+            ) {
+                var currentPose2d = pose2d
 
-        val seriesXY = XYChart.Series<Number, Number>()
-        val seriesRobotStart = XYChart.Series<Number, Number>()
-        val seriesRobotEnd = XYChart.Series<Number, Number>()
+                node.setOnMouseDragged { event ->
+                    val newMouseX = event.sceneX
+                    val newMouseY = event.sceneY
 
-        with(seriesXY) {
-            val iterator = trajectory.iterator()
+                    val localMouseX = xAxis.sceneToLocal(newMouseX, newMouseY).x
+                    val localMouseY = yAxis.sceneToLocal(newMouseX, newMouseY).y
 
-            while (!iterator.isDone) {
-                val point: TrajectorySamplePoint<TimedEntry<Pose2dWithCurvature>> = iterator.advance(0.02.second)
-                data(
-                    point.state.state.pose.translation.x.feet,
-                    point.state.state.pose.translation.y.feet,
-                    point.state.state.pose.rotation.degree
+                    xValue = xAxis.getValueForDisplay(localMouseX)
+                    yValue = yAxis.getValueForDisplay(localMouseY)
+                }
+                node.setOnMouseReleased {
+                    // Send update
+                    val newPose2d = Pose2d(
+                        Translation2d(
+                            xValue.feet,
+                            yValue.feet
+                        ),
+                        pose2d.rotation
+                    )
+                    GeneratorView.waypoints[GeneratorView.waypoints.indexOf(currentPose2d)] = newPose2d
+                    currentPose2d = newPose2d
+                }
+            }
+        }
+    }
+
+    private fun update(trajectory: TimedTrajectory<Pose2dWithCurvature>) {
+        val iterator = trajectory.iterator()
+
+        seriesXY.data.clear()
+        while (!iterator.isDone) {
+            val point: TrajectorySamplePoint<TimedEntry<Pose2dWithCurvature>> = iterator.advance(0.02.second)
+            val data = seriesXY.data(
+                point.state.state.pose.translation.x.feet,
+                point.state.state.pose.translation.y.feet,
+                point.state.state.pose.rotation.degree
+            )
+            Tooltip.install(
+                data.node,
+                Tooltip(
+                    "%2.2f feet, %2.2f feet, %2.2f degrees".format(
+                        data.xValue,
+                        data.yValue,
+                        data.extraValue
+                    )
                 )
-            }
-            this@PositionChart.data.add(this)
-
-            data.forEach { entry ->
-                val format = DecimalFormat("##.##")
-
-                val x = format.format(entry.xValue)
-                val y = format.format(entry.yValue)
-                val a = format.format(entry.extraValue)
-
-                val t = Tooltip("$x feet, $y feet, $a degrees")
-                Tooltip.install(entry.node, t)
-            }
+            )
         }
 
-
-        with(seriesRobotStart) {
-            getRobotBoundingBox(trajectory.firstState.state.pose).forEach {
-                data(it.translation.x.feet, it.translation.y.feet)
-            }
-            this@PositionChart.data.add(this)
+        seriesRobotStart.data.clear()
+        getRobotBoundingBox(trajectory.firstState.state.pose).forEach {
+            seriesRobotStart.data(it.translation.x.feet, it.translation.y.feet)
         }
 
-        with(seriesRobotEnd) {
-            getRobotBoundingBox(trajectory.lastState.state.pose).forEach {
-                data(it.translation.x.feet, it.translation.y.feet)
-            }
-            this@PositionChart.data.add(this)
+        seriesRobotEnd.data.clear()
+        getRobotBoundingBox(trajectory.lastState.state.pose).forEach {
+            seriesRobotEnd.data(it.translation.x.feet, it.translation.y.feet)
         }
 
+        seriesWayPoints.data.forEach { it.node.toFront() }
     }
 
 
