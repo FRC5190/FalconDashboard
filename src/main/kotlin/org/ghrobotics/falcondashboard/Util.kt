@@ -12,7 +12,8 @@ fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hb
     paddingAll = 5
     jfxtextfield {
         bind(property, converter = NumberStringConverter())
-        prefWidth = 50.0
+        prefWidth = 40.0
+        minWidth = 40.0
     }
     text("    $name") { alignment = Pos.CENTER_LEFT }
 }

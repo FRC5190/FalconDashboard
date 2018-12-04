@@ -5,6 +5,7 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedTrajectory
@@ -30,6 +31,9 @@ object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
         isLegendVisible = false
         createSymbols = false
         animated = false
+
+        update(GeneratorView.trajectory.value)
+        GeneratorView.trajectory.addListener { _, _, newValue -> update(newValue) }
     }
 
     fun update(trajectory: TimedTrajectory<Pose2dWithCurvature>) {

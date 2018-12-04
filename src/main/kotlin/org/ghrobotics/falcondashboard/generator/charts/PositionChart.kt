@@ -40,10 +40,6 @@ object PositionChart : LineChart<Number, Number>(
             "-fx-background-position: top right;" +
             "-fx-background-repeat: no-repeat;"
 
-        setMinSize(54 * 25.0, 28 * 25.0)
-        setPrefSize(54 * 25.0, 28 * 25.0)
-        setMaxSize(54 * 25.0, 28 * 25.0)
-
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
         animated = false
@@ -59,6 +55,10 @@ object PositionChart : LineChart<Number, Number>(
             update(trajectory)
             updateWaypoints(GeneratorView.waypoints)
         }
+    }
+
+    override fun resize(width: Double, height: Double) {
+        super.resize(height / 27 * 54, height)
     }
 
     private fun updateWaypoints(wayPoints: List<Pose2d>) {

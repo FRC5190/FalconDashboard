@@ -1,6 +1,9 @@
 package org.ghrobotics.falcondashboard.generator
 
 import javafx.beans.property.SimpleObjectProperty
+import javafx.geometry.Pos
+import javafx.scene.layout.Priority
+import javafx.scene.paint.Color
 import javafx.stage.StageStyle
 import kfoenix.jfxbutton
 import kfoenix.jfxcheckbox
@@ -100,8 +103,16 @@ class GeneratorView : View() {
             }
         }
         jfxtabpane {
+            maxWidth = Double.MAX_VALUE
+            hgrow = Priority.ALWAYS
+            style {
+                backgroundColor = multi(Color.LIGHTGRAY)
+            }
             tab("Position") {
-                add(PositionChart)
+                hbox {
+                    alignment = Pos.CENTER_LEFT
+                    add(PositionChart)
+                }
                 isClosable = false
             }
             tab("Velocity") {
