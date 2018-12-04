@@ -123,10 +123,10 @@ class GeneratorView : View() {
     }
 
     companion object {
-        val waypoints = arrayListOf(
+        val waypoints = observableList(
             Pose2d(1.5.feet, 23.feet, 0.degree),
             Pose2d(11.5.feet, 23.feet, 0.degree)
-        ).observable()
+        )
 
         val trajectory = SimpleObjectProperty(DefaultTrajectoryGenerator.baseline)
 

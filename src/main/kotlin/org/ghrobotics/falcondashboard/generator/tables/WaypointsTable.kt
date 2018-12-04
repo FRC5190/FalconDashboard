@@ -41,9 +41,12 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
     init {
         isEditable = true
 
-        columnX
-        columnY
-        columnAngle
+        columnResizePolicy = CONSTRAINED_RESIZE_POLICY
+
+        columns.forEach {
+            it.isSortable = false
+            it.isReorderable = false
+        }
 
         with(columnX) {
             setCellFactory { cellFactory() }
@@ -77,11 +80,6 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
                 )
                 this@WaypointsTable.refresh()
             }
-        }
-
-        columns.forEach {
-            it.prefWidthProperty().bind(widthProperty() * 0.28)
-            it.isResizable = false
         }
 
         setRowFactory { _ ->
