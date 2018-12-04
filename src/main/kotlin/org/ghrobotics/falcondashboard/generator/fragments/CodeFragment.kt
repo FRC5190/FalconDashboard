@@ -1,42 +1,60 @@
 package org.ghrobotics.falcondashboard.generator.fragments
 
-import javafx.scene.text.Font
+import javafx.scene.layout.Priority
+import kfoenix.jfxtextarea
 import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
-import tornadofx.Fragment
-import tornadofx.hbox
-import tornadofx.paddingAll
-import tornadofx.text
+import tornadofx.*
+import java.awt.Desktop
+import java.net.URI
 
 class CodeFragment : Fragment() {
-    override val root = hbox {}
+    override val root = vbox {
 
-    init {
+        title = "Generated Code"
 
-        val builder = StringBuilder()
-        builder.append("val ")
-        builder.append(Settings.name.value.decapitalize().replace("\\s".toRegex(), ""))
-        builder.append(" = ")
-        builder.append("waypoints(\n")
-        GeneratorView.waypoints.toList().forEach {
-            builder.append("    Pose2d(${it.translation.x.feet}.feet, ${it.translation.y.feet}.feet, ${it.rotation.degree}.degree)\n")
+        style {
+            padding = box(1.em)
         }
-        builder.append(
-            ").generateTrajectory(\n    \"${Settings.name.value}\",\n    ${Settings.reversed.value},\n" +
-                    "    ${Settings.maxVelocity.value}.feet.velocity,\n    ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
-                    "    listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration)\n)"
-        )
 
-        with(root) {
-            title = "Generated Code"
-            paddingAll = 20.0
+        prefWidth = 500.0
+        prefHeight = 500.0
 
-            prefWidth = 500.0
-            prefHeight = 500.0
+        jfxtextarea {
+            isEditable = false
 
-            text(builder.toString()) {
-                font = Font("Consolas", 12.0)
+            vgrow = Priority.ALWAYS
+
+            text = buildString {
+                val name = Settings.name.value.decapitalize()
+                    .replace("\\s+".toRegex(), "")
+
+                append("val $name = waypoints(\n")
+                GeneratorView.waypoints.forEach {
+                    append("    Pose2d(${it.translation.x.feet}.feet, ${it.translation.y.feet}.feet, ${it.rotation.degree}.degree)\n")
+                }
+                append(
+                    ").generateTrajectory(\n" +
+                        "    \"${Settings.name.value}\",\n" +
+                        "    ${Settings.reversed.value},\n" +
+                        "    ${Settings.maxVelocity.value}.feet.velocity,\n" +
+                        "    ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
+                        "    listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration)" +
+                        "\n)"
+                )
             }
+        }
+        vbox {
+            style {
+                padding = box(0.5.em, 0.em, 0.em, 0.em)
+            }
+            add(text(" This code is generated to be used with FalconLibrary"))
+            add(hyperlink("https://github.com/5190GreenHopeRobotics/FalconLibrary") {
+                setOnAction {
+                    Desktop.getDesktop()
+                        .browse(URI("https://github.com/5190GreenHopeRobotics/FalconLibrary"))
+                }
+            })
         }
     }
 }
