@@ -56,9 +56,9 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
     // FRC Specific Libraries
-//    compile 'com.github.5190GreenHopeRobotics:FalconLibrary:master-SNAPSHOT'
+    compile 'com.github.5190GreenHopeRobotics:FalconLibrary:master-SNAPSHOT'
     runtime "edu.wpi.first.ntcore:ntcore-jni:4.1.0:all"
-    compile "org.ghrobotics.lib:FalconLibrary:2018.11.13" // Local
+    // compile "org.ghrobotics.lib:FalconLibrary:2018.11.13" // Local
     
     // TornadoFX
     compile 'no.tornado:tornadofx:1.7.17'
