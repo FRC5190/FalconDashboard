@@ -13,6 +13,8 @@ object Network {
     init {
         LiveDashboard.liveDashboardTable.instance.startClient(Settings.ip.value)
 
+        var lastIsFollowingPath = false
+
         var lastRobotPose: Pose2d? = null
         var lastPathPose: Pose2d? = null
 
@@ -29,22 +31,31 @@ object Network {
                 LiveDashboard.pathHeading.radian
             )
 
-            if (LiveDashboard.pathReset) {
-                LiveDashboard.pathReset = false
-                ui { FieldChart.clear() }
-                lastRobotPose = null
-                lastPathPose = null
-            } else {
-                val updateRobotPose = robotPose != lastRobotPose
-                val updatePathPose = pathPose != lastPathPose
+            val updateRobotPose = robotPose != lastRobotPose
+            if (updateRobotPose) ui { FieldChart.updateRobotPose(robotPose) }
+            lastRobotPose = robotPose
 
-                ui {
-                    if (updateRobotPose) FieldChart.addRobotPose(robotPose)
-                    if (updatePathPose) FieldChart.addPathPose(pathPose)
+            if (LiveDashboard.isFollowingPath) {
+                if (!lastIsFollowingPath) {
+                    // Only reset path cache when another path starts
+                    ui { FieldChart.clear() }
+                    lastRobotPose = null
+                    lastPathPose = null
+                    lastIsFollowingPath = true
+                } else {
+                    val updatePathPose = pathPose != lastPathPose
+
+                    if (updatePathPose || updateRobotPose) {
+                        ui {
+                            if (updateRobotPose) FieldChart.addRobotPathPose(robotPose)
+                            if (updatePathPose) FieldChart.addPathPose(pathPose)
+                        }
+                    }
+
+                    lastPathPose = pathPose
                 }
-
-                lastRobotPose = robotPose
-                lastPathPose = pathPose
+            } else {
+                lastIsFollowingPath = false
             }
         }
     }

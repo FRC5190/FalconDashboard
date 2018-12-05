@@ -37,26 +37,19 @@ object FieldChart : LineChart<Number, Number>(
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
         animated = false
-        createSymbols = false
+        createSymbols = true
 
         data.add(robotSeries)
         data.add(pathSeries)
         data.add(robotBoundingBoxSeries)
     }
 
-    fun addRobotPose(pose2d: Pose2d) {
+    fun addRobotPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         robotSeries.data(
             pose2d.translation.x.feet,
             pose2d.translation.y.feet
         )
-        robotBoundingBoxSeries.data.clear()
-        getRobotBoundingBox(pose2d).forEach {
-            robotBoundingBoxSeries.data(
-                it.translation.x.feet,
-                it.translation.y.feet
-            )
-        }
     }
 
     fun addPathPose(pose2d: Pose2d) {
@@ -65,6 +58,16 @@ object FieldChart : LineChart<Number, Number>(
             pose2d.translation.x.feet,
             pose2d.translation.y.feet
         )
+    }
+
+    fun updateRobotPose(pose2d: Pose2d) {
+        robotBoundingBoxSeries.data.clear()
+        getRobotBoundingBox(pose2d).forEach {
+            robotBoundingBoxSeries.data(
+                it.translation.x.feet,
+                it.translation.y.feet
+            )
+        }
     }
 
     private fun getRobotBoundingBox(center: Pose2d): Array<Pose2d> {
