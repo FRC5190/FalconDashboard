@@ -30,10 +30,6 @@ object FieldChart : LineChart<Number, Number>(
             "-fx-background-position: top right;" +
             "-fx-background-repeat: no-repeat;"
 
-        setMinSize(54 * 30.0, 28 * 30.0)
-        setPrefSize(54 * 30.0, 28 * 30.0)
-        setMaxSize(54 * 30.0, 28 * 30.0)
-
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
         animated = false
@@ -42,6 +38,15 @@ object FieldChart : LineChart<Number, Number>(
         data.add(robotSeries)
         data.add(pathSeries)
         data.add(robotBoundingBoxSeries)
+    }
+
+    override fun resize(width: Double, height: Double) {
+        val newWidth = height / 27 * 54
+        if (newWidth > width) {
+            super.resize(width, width / 54 * 27)
+        } else {
+            super.resize(newWidth, height)
+        }
     }
 
     fun addRobotPathPose(pose2d: Pose2d) {
