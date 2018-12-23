@@ -1,12 +1,12 @@
 package org.ghrobotics.falcondashboard.generator.charts
 
+import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Tooltip
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
-import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
@@ -16,9 +16,7 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedTrajectory
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TrajectorySamplePoint
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.second
-import tornadofx.MultiValue
-import tornadofx.data
-import tornadofx.style
+import tornadofx.*
 
 object PositionChart : LineChart<Number, Number>(
     NumberAxis(0.0, 54.0, 1.0),
@@ -26,8 +24,6 @@ object PositionChart : LineChart<Number, Number>(
 ) {
 
     private val seriesXY = XYChart.Series<Number, Number>()
-    private val seriesRobotStart = XYChart.Series<Number, Number>()
-    private val seriesRobotEnd = XYChart.Series<Number, Number>()
     private val seriesWayPoints = XYChart.Series<Number, Number>()
 
     init {
@@ -45,8 +41,6 @@ object PositionChart : LineChart<Number, Number>(
         animated = false
 
         data.add(seriesXY)
-        data.add(seriesRobotStart)
-        data.add(seriesRobotEnd)
         data.add(seriesWayPoints)
 
         update(GeneratorView.trajectory.value)
@@ -57,9 +51,7 @@ object PositionChart : LineChart<Number, Number>(
         }
     }
 
-    override fun resize(width: Double, height: Double) {
-        super.resize(height / 27 * 54, height)
-    }
+    override fun resize(width: Double, height: Double) = super.resize(height / 27 * 54, height)
 
     private fun updateWaypoints(wayPoints: List<Pose2d>) {
         seriesWayPoints.data.clear()
@@ -69,7 +61,9 @@ object PositionChart : LineChart<Number, Number>(
                 pose2d.translation.y.feet,
                 pose2d.rotation.degree
             ) {
-                var currentPose2d = pose2d
+                val currentPose2d = SimpleObjectProperty(pose2d)
+
+                node.add(PositionNode(currentPose2d, (xAxis as NumberAxis).scaleProperty()))
 
                 node.setOnMouseDragged { event ->
                     val newMouseX = event.sceneX
@@ -90,8 +84,18 @@ object PositionChart : LineChart<Number, Number>(
                         ),
                         pose2d.rotation
                     )
-                    GeneratorView.waypoints[GeneratorView.waypoints.indexOf(currentPose2d)] = newPose2d
-                    currentPose2d = newPose2d
+                    GeneratorView.waypoints[GeneratorView.waypoints.indexOf(currentPose2d.get())] = newPose2d
+                    currentPose2d.set(newPose2d)
+                }
+                node.setOnMouseClicked {
+                    seriesWayPoints.data.forEach { data ->
+                        for (child in data.node.getChildList()!!) {
+                            if (child is PositionNode) {
+                                child.selectedProperty.set(data.node == node)
+                                break
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -120,36 +124,7 @@ object PositionChart : LineChart<Number, Number>(
             )
         }
 
-        seriesRobotStart.data.clear()
-        getRobotBoundingBox(trajectory.firstState.state.pose).forEach {
-            seriesRobotStart.data(it.translation.x.feet, it.translation.y.feet)
-        }
-
-        seriesRobotEnd.data.clear()
-        getRobotBoundingBox(trajectory.lastState.state.pose).forEach {
-            seriesRobotEnd.data(it.translation.x.feet, it.translation.y.feet)
-        }
-
         seriesWayPoints.data.forEach { it.node.toFront() }
     }
 
-
-    private fun getRobotBoundingBox(center: Pose2d): Array<Pose2d> {
-        val tl = center.transformBy(
-            Pose2d(Translation2d(-Properties.robotLength / 2, Properties.robotWidth / 2))
-        )
-
-        val tr = center.transformBy(
-            Pose2d(Translation2d(Properties.robotLength / 2, Properties.robotWidth / 2))
-        )
-
-        val bl = center.transformBy(
-            Pose2d(Translation2d(-Properties.robotLength / 2, -Properties.robotWidth / 2))
-        )
-
-        val br = center.transformBy(
-            Pose2d(Translation2d(Properties.robotLength / 2, -Properties.robotWidth / 2))
-        )
-        return arrayOf(tl, tr, br, bl, tl)
-    }
 }

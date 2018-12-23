@@ -17,3 +17,7 @@
 .jfx-tab-pane .tab-selected-line {
     -fx-background-color: #bbb;
 }
+
+.series1 {
+    -fx-background-color: transparent;
+}
