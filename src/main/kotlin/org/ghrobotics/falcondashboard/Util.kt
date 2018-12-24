@@ -2,6 +2,10 @@ package org.ghrobotics.falcondashboard
 
 import javafx.application.Platform
 import javafx.beans.property.DoublePropertyBase
+import javafx.beans.property.Property
+import javafx.beans.property.ReadOnlyObjectPropertyBase
+import javafx.beans.property.ReadOnlyProperty
+import javafx.collections.ObservableList
 import javafx.geometry.Pos
 import javafx.scene.Parent
 import javafx.util.converter.NumberStringConverter
@@ -21,3 +25,17 @@ fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hb
 fun ui(block: () -> Unit) {
     Platform.runLater(block)
 }
+
+fun <R, T> mapprop(receiver: ReadOnlyProperty<R>, getter: ReadOnlyProperty<R>.() -> T): ReadOnlyProperty<T> =
+    object : ReadOnlyObjectPropertyBase<T>() {
+        override fun getName() = receiver.name
+        override fun getBean() = receiver.bean
+
+        init {
+            receiver.onChange {
+                fireValueChangedEvent()
+            }
+        }
+
+        override fun get() = getter.invoke(receiver)
+    }
