@@ -4,6 +4,7 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
+import javafx.scene.control.Tooltip
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import org.ghrobotics.falcondashboard.generator.GeneratorView
@@ -77,11 +78,22 @@ object PositionChart : LineChart<Number, Number>(
         while (!iterator.isDone) {
             val point: TrajectorySamplePoint<TimedEntry<Pose2dWithCurvature>> =
                 iterator.advance(0.02.second)
-            seriesXY.data(
+            val data = seriesXY.data(
                 point.state.state.pose.translation.x.feet,
                 point.state.state.pose.translation.y.feet,
                 point.state.state.pose.rotation.degree
             )
+            Tooltip.install(
+                data.node,
+                Tooltip(
+                    "%2.2f feet, %2.2f feet, %2.2f degrees".format(
+                        data.xValue,
+                        data.yValue,
+                        data.extraValue
+                    )
+                )
+            )
+            data.node.toBack()
         }
     }
 
