@@ -5,12 +5,17 @@ import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.control.Tooltip
+import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import org.ghrobotics.falcondashboard.generator.GeneratorView
+import org.ghrobotics.falcondashboard.generator.charts.PositionChart.setOnMouseClicked
+import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
+import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TrajectorySamplePoint
+import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.second
 import tornadofx.MultiValue
 import tornadofx.bind
@@ -42,6 +47,16 @@ object PositionChart : LineChart<Number, Number>(
 
         data.add(seriesXY)
         data.add(seriesWayPoints)
+
+        setOnMouseClicked {
+            if (it.button == MouseButton.PRIMARY) {
+                if (it.clickCount == 2) {
+                    val plotX = xAxis.getValueForDisplay(xAxis.sceneToLocal(it.sceneX, it.sceneY).x)
+                    val plotY = yAxis.getValueForDisplay(yAxis.sceneToLocal(it.sceneX, it.sceneY).y)
+                    GeneratorView.waypoints.add(Pose2d(Translation2d(plotX.feet, plotY.feet)))
+                }
+            }
+        }
 
         seriesWayPoints.data
             .bind(GeneratorView.waypoints) {
