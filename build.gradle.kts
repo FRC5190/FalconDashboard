@@ -39,10 +39,13 @@ allprojects {
         // WPILib and Vendors
         wpi.deps.wpilib().forEach { compile(it) }
         wpi.deps.vendor.java().forEach { compile(it) }
-        wpi.deps.vendor.jni(NativePlatforms.roborio).forEach { nativeZip(it) }
-        wpi.deps.vendor.jni(NativePlatforms.desktop).forEach { nativeDesktopZip(it) }
 
-        native(group = "edu.wpi.first.ntcore", name = "ntcore-jni", version = wpi.wpilibVersion, classifierFunction = ::wpilibClassifier)
+        native(
+            group = "edu.wpi.first.ntcore",
+            name = "ntcore-jni",
+            version = wpi.wpilibVersion,
+            classifierFunction = ::wpilibClassifier
+        )
 
         compile("com.github.5190GreenHopeRobotics:FalconLibrary:2019-SNAPSHOT")
 
