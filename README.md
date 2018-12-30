@@ -1,8 +1,6 @@
-# TrajectoryGenerator
+# FalconDashboard
 
-UI to generate trajectories for any game.
-Uses FalconLibrary as a dependency.
+This is a utility that can be used to generate trajectories and visualize the robot's position on the field live. 
 
-## Instructions to Run
- * Requires JDK 11
- * `./gradlew run`
+### Instructions:
+`./gradlew run`
