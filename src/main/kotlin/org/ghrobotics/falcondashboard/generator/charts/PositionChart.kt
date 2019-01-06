@@ -44,6 +44,8 @@ object PositionChart : LineChart<Number, Number>(
         isLegendVisible = false
         animated = false
         createSymbols = true
+        verticalGridLinesVisible = false
+        isHorizontalGridLinesVisible = false
 
         data.add(seriesXY)
         data.add(seriesWayPoints)

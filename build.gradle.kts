@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application
     kotlin("jvm") version "1.3.11"
-    id("edu.wpi.first.GradleRIO") version "2019.1.1-beta-4b"
+    id("edu.wpi.first.GradleRIO") version "2019.1.1"
     id("com.google.osdetector") version "1.4.0"
 }
 
@@ -47,7 +47,7 @@ allprojects {
             classifierFunction = ::wpilibClassifier
         )
 
-        compile("com.github.5190GreenHopeRobotics:FalconLibrary:2019-SNAPSHOT")
+        compile("com.github.5190GreenHopeRobotics:FalconLibrary:2019.1.5")
 
         // TornadoFX
         compile("no.tornado:tornadofx:1.7.17")
