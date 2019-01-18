@@ -19,6 +19,11 @@ object Network {
         var lastPathPose: Pose2d? = null
 
         GlobalScope.launchFrequency(50) {
+
+            ui {
+                FieldChart.updateVisionTargets(LiveDashboard.visionTargets)
+            }
+
             val robotPose = Pose2d(
                 LiveDashboard.robotX.feet,
                 LiveDashboard.robotY.feet,

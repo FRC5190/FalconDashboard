@@ -24,6 +24,7 @@ tasks.withType<Wrapper>().configureEach {
 
 allprojects {
     repositories {
+        mavenLocal()
         mavenCentral()
         jcenter()
         maven { setUrl("https://jitpack.io") }
@@ -47,7 +48,7 @@ allprojects {
             classifierFunction = ::wpilibClassifier
         )
 
-        compile("com.github.5190GreenHopeRobotics:FalconLibrary:2019.1.5")
+        compile("org.ghrobotics:FalconLibrary:2019.1.17")
 
         // TornadoFX
         compile("no.tornado:tornadofx:1.7.17")

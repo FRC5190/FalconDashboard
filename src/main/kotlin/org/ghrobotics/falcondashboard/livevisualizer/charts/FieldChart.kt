@@ -19,6 +19,7 @@ object FieldChart : LineChart<Number, Number>(
     private val robotSeries = XYChart.Series<Number, Number>()
     private val pathSeries = XYChart.Series<Number, Number>()
     private val robotBoundingBoxSeries = XYChart.Series<Number, Number>()
+    private val visionTargetSeries = XYChart.Series<Number, Number>()
 
     init {
         style {
@@ -33,7 +34,7 @@ object FieldChart : LineChart<Number, Number>(
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
         animated = false
-        createSymbols = false
+        createSymbols = true
 
         verticalGridLinesVisible = false
         isHorizontalGridLinesVisible = false
@@ -41,6 +42,7 @@ object FieldChart : LineChart<Number, Number>(
         data.add(robotSeries)
         data.add(pathSeries)
         data.add(robotBoundingBoxSeries)
+        data.add(visionTargetSeries)
     }
 
     override fun resize(width: Double, height: Double) {
@@ -75,6 +77,21 @@ object FieldChart : LineChart<Number, Number>(
                 it.translation.x.feet,
                 it.translation.y.feet
             )
+        }
+    }
+
+    fun updateVisionTargets(newVisionTargets: List<Pose2d>) {
+        visionTargetSeries.data.clear()
+        newVisionTargets.forEach {
+            val data = XYChart.Data<Number, Number>(
+                it.translation.x.feet,
+                it.translation.y.feet
+            )
+            data.node = VisionTargetNode(
+                it.rotation,
+                (xAxis as NumberAxis).scaleProperty()
+            )
+            visionTargetSeries.data.add(data)
         }
     }
 
