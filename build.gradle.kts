@@ -5,7 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-    kotlin("jvm") version "1.3.11"
+    kotlin("jvm") version "1.3.20"
     id("edu.wpi.first.GradleRIO") version "2019.1.1"
     id("com.google.osdetector") version "1.4.0"
 }
