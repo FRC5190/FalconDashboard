@@ -15,6 +15,7 @@ import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxVelocity
 import org.ghrobotics.falcondashboard.Settings.name
+import org.ghrobotics.falcondashboard.Settings.optimize
 import org.ghrobotics.falcondashboard.Settings.reversed
 import org.ghrobotics.falcondashboard.Settings.startVelocity
 import org.ghrobotics.falcondashboard.createNumericalEntry
@@ -57,6 +58,11 @@ class GeneratorView : View() {
                 paddingAll = 5
                 text = "Reversed"
                 bind(reversed)
+            }
+            jfxcheckbox {
+                paddingAll = 5
+                text = "Optimize Curvature"
+                bind(optimize)
             }
             jfxcheckbox {
                 paddingAll = 5
@@ -134,6 +140,7 @@ class GeneratorView : View() {
             update()
             waypoints.onChange { update() }
             reversed.onChange { update() }
+            optimize.onChange { update() }
             autoPathFinding.onChange { update() }
 
             startVelocity.onChange { update() }
@@ -175,7 +182,8 @@ class GeneratorView : View() {
                     endVelocity = endVelocity.value.feet.velocity,
                     maxVelocity = maxVelocity.value.feet.velocity,
                     maxAcceleration = maxAcceleration.value.feet.acceleration,
-                    reversed = reversed.value
+                    reversed = reversed.value,
+                    optimizeSplines = optimize.value
                 )
             )
 

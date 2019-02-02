@@ -21,6 +21,7 @@ import java.io.FileWriter
 object Settings {
     val name = SimpleStringProperty("Baseline")
     val reversed = SimpleBooleanProperty(false)
+    val optimize = SimpleBooleanProperty(true)
     val autoPathFinding = SimpleBooleanProperty(false)
     val startVelocity = SimpleDoubleProperty(0.0)
     val endVelocity = SimpleDoubleProperty(0.0)
@@ -33,6 +34,7 @@ object Settings {
         write {
             beginArray()
             value(it.reversed.value)
+            value(it.optimize.value)
             value(it.autoPathFinding.value)
             value(it.startVelocity.value)
             value(it.endVelocity.value)
@@ -45,6 +47,7 @@ object Settings {
         read {
             beginArray()
             Settings.reversed.set(nextBoolean())
+            Settings.optimize.set(nextBoolean())
             Settings.autoPathFinding.set(nextBoolean())
             Settings.startVelocity.set(nextDouble())
             Settings.endVelocity.set(nextDouble())

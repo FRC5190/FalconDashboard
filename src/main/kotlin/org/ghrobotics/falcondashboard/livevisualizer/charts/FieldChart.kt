@@ -34,7 +34,7 @@ object FieldChart : LineChart<Number, Number>(
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
         animated = false
-        createSymbols = true
+        createSymbols = false
 
         verticalGridLinesVisible = false
         isHorizontalGridLinesVisible = false
