@@ -42,17 +42,30 @@ class CodeFragment : Fragment() {
 
                 val dm = DecimalFormat("##.###")
 
-                val firstX = GeneratorView.waypoints.first().translation.x;
-                val firstY = GeneratorView.waypoints.first().translation.y;
+                val firstX = GeneratorView.waypoints.first().translation.x.feet
+                val firstY = GeneratorView.waypoints.first().translation.y.feet
+
+                var prevX = 0.0
+                var prevY = 0.0
                 GeneratorView.waypoints.forEach {
 
+
                     append(
-                        "Pose2d(${dm.format(it.translation.x.feet)}.feet, " +
-                            "${dm.format(it.translation.y.feet)}.feet, " +
-                            "${dm.format(it.rotation.degree)}.degree)"
+                        if(it != GeneratorView.waypoints.first()) {
+                            "queueTask(add_forwards_spline -s " + prevY + " " + prevX + " 90" + " 2 " + (firstY - it.translation.y.feet) + " " + (it.translation.x.feet - firstX)
+                        }else {
+                            ""
+                        }
+//                        "Pose2d(${dm.format( it.translation.x.feet - firstX)}.feet, " +
+//                            "${dm.format(firstY - it.translation.y.feet)}.feet, " +
+//                            "${dm.format(it.rotation.degree)}.degree)"
                     )
                     append(";")
                     append("\n")
+
+                    println("Previous X " + prevX)
+                    prevX = (it.translation.x.feet - firstX)
+                    prevY = (it.translation.y.feet - firstY)
                 }
 //                append("    ),\n")
 //                append(
