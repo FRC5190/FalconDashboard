@@ -3,12 +3,13 @@ package org.ghrobotics.falcondashboard
 import javafx.scene.Parent
 import kfoenix.jfxtabpane
 import org.ghrobotics.falcondashboard.generator.GeneratorView
+import org.ghrobotics.falcondashboard.livevisualizer.BBQVisualizer
 import org.ghrobotics.falcondashboard.livevisualizer.LiveVisualizerView
 import tornadofx.View
 import tornadofx.plusAssign
 import tornadofx.tab
 
-class MainView : View("FRC 5190 Falcon Dashboard") {
+class MainView : View("Falcon Dashboard") {
     override val root: Parent = jfxtabpane {
         stylesheets += resources["/AppStyle.css"]
 
@@ -19,8 +20,9 @@ class MainView : View("FRC 5190 Falcon Dashboard") {
             this += GeneratorView()
             isClosable = false
         }
-        tab("Live Visualizer") {
-            this += LiveVisualizerView()
+
+        tab("BBQ Visualizer") {
+            this += BBQVisualizer()
             isClosable = false
         }
     }
