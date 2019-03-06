@@ -19,7 +19,7 @@ import java.io.FileWriter
 
 
 object Settings {
-    val name = SimpleStringProperty("Baseline")
+    val name = SimpleStringProperty("Auton Name")
     val reversed = SimpleBooleanProperty(false)
     val optimize = SimpleBooleanProperty(true)
     val autoPathFinding = SimpleBooleanProperty(false)
