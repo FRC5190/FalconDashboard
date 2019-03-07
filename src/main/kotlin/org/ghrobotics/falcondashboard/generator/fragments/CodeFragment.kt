@@ -48,13 +48,16 @@ class CodeFragment : Fragment() {
                 var prevX = 0.0
                 var prevY = 0.0
 
-                var initialAngle = 90;
+                var initialAngle = 270
+                var prevAngle = 0.0
                 GeneratorView.waypoints.forEach {
 
 
                     append(
                         if(it != GeneratorView.waypoints.first()) {
-                            "queueTask(add_forwards_spline -s " + prevY + " " + prevX + " 90" + " 2 " + (firstY - it.translation.y.feet) + " " + (it.translation.x.feet - firstX)
+                            "queueTask(add_forwards_spline -s " + dm.format(prevY) + "," + dm.format(prevX) + "," + dm.format(prevAngle) + " 2," +
+                                    dm.format(firstY - it.translation.y.feet) + "," + dm.format(it.translation.x.feet - firstX) + "," +
+                                    dm.format(initialAngle - it.rotation.degree) + "2,5,5,0,0"
                         }else {
                             ""
                         }
@@ -62,11 +65,14 @@ class CodeFragment : Fragment() {
 //                            "${dm.format(firstY - it.translation.y.feet)}.feet, " +
 //                            "${dm.format(it.rotation.degree)}.degree)"
                     )
-                    append(";")
-                    append("\n")
+                    if(it != GeneratorView.waypoints.first()) {
+                        append(";")
+                        append("\n")
+                    }
 
                     prevX = (it.translation.x.feet - firstX)
                     prevY = (firstY - it.translation.y.feet)
+                    prevAngle = initialAngle - it.rotation.degree
                 }
 //                append("    ),\n")
 //                append(
@@ -83,7 +89,7 @@ class CodeFragment : Fragment() {
             style {
                 padding = box(0.5.em, 0.em, 0.em, 0.em)
             }
-            add(text(" This code is generated to be used with FalconLibrary"))
+            add(text(" This code is generated to be added in an AutonTask with BBQLibs"))
             add(hyperlink("https://github.com/5190GreenHopeRobotics/FalconLibrary") {
                 setOnAction {
                     Desktop.getDesktop()
