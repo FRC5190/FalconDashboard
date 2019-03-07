@@ -9,6 +9,8 @@ import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.mapprop
 import org.ghrobotics.lib.mathematics.units.Rotation2d
 import tornadofx.*
+import java.io.File
+import java.net.URI
 
 open class RobotNode(
     private val robotRotationProperty: ReadOnlyProperty<Rotation2d>,
@@ -31,6 +33,7 @@ open class RobotNode(
                 borderColor = multi(box(Color.RED))
                 borderRadius = multi(box(0.5.em))
                 borderWidth = multi(box(0.25.em))
+                backgroundImage = multi(File("BBQRobot.png").toURI())
             }
             rotateProperty().bind(robotRotation)
             bindRobotRotation()
@@ -45,6 +48,8 @@ open class RobotNode(
 
     init {
         children.add(robotPane)
+        println("RobotPane Width = " + robotPane.width)
+        println("RobotPane Height = " + robotPane.height)
     }
 
 }
