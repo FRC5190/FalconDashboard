@@ -47,6 +47,8 @@ class CodeFragment : Fragment() {
 
                 var prevX = 0.0
                 var prevY = 0.0
+
+                var initialAngle = 90;
                 GeneratorView.waypoints.forEach {
 
 
@@ -63,9 +65,8 @@ class CodeFragment : Fragment() {
                     append(";")
                     append("\n")
 
-                    println("Previous X " + prevX)
                     prevX = (it.translation.x.feet - firstX)
-                    prevY = (it.translation.y.feet - firstY)
+                    prevY = (firstY - it.translation.y.feet)
                 }
 //                append("    ),\n")
 //                append(
