@@ -90,10 +90,10 @@ class CodeFragment : Fragment() {
                 padding = box(0.5.em, 0.em, 0.em, 0.em)
             }
             add(text(" This code is generated to be added in an AutonTask with BBQLibs"))
-            add(hyperlink("https://github.com/5190GreenHopeRobotics/FalconLibrary") {
+            add(hyperlink("https://github.com/FRC2714/2019Competition") {
                 setOnAction {
                     Desktop.getDesktop()
-                        .browse(URI("https://github.com/5190GreenHopeRobotics/FalconLibrary"))
+                        .browse(URI("https://github.com/FRC2714/2019Competition"))
                 }
             })
         }
