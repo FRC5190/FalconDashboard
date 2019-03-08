@@ -33,7 +33,7 @@ open class RobotNode(
                 borderColor = multi(box(Color.RED))
                 borderRadius = multi(box(0.5.em))
                 borderWidth = multi(box(0.25.em))
-                backgroundImage = multi(File("BBQRobot.png").toURI())
+//                backgroundImage = multi(File("BBQRobot.png").toURI())
             }
             rotateProperty().bind(robotRotation)
             bindRobotRotation()

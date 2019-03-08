@@ -48,7 +48,7 @@ class CodeFragment : Fragment() {
                 var prevX = 0.0
                 var prevY = 0.0
 
-                var initialAngle = 270
+                var initialAngle = 90
                 var prevAngle = 0.0
                 GeneratorView.waypoints.forEach {
 
