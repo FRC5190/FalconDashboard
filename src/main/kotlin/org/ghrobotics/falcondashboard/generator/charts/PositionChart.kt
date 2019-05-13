@@ -15,7 +15,9 @@ import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
 import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TrajectorySamplePoint
+import org.ghrobotics.lib.mathematics.units.SILengthConstants
 import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.meter
 import org.ghrobotics.lib.mathematics.units.second
 import tornadofx.MultiValue
 import tornadofx.bind
@@ -63,8 +65,8 @@ object PositionChart : LineChart<Number, Number>(
         seriesWayPoints.data
             .bind(GeneratorView.waypoints) {
                 val data = XYChart.Data<Number, Number>(
-                    it.translation.x.feet,
-                    it.translation.y.feet
+                    it.translation.x / SILengthConstants.kFeetToMeter,
+                    it.translation.y / SILengthConstants.kFeetToMeter
                 )
                 val currentPose2d = SimpleObjectProperty(it)
                 currentPose2d.addListener { _, oldPose, newPose ->
@@ -96,8 +98,8 @@ object PositionChart : LineChart<Number, Number>(
             val point: TrajectorySamplePoint<TimedEntry<Pose2dWithCurvature>> =
                 iterator.advance(0.02.second)
             val data = seriesXY.data(
-                point.state.state.pose.translation.x.feet,
-                point.state.state.pose.translation.y.feet,
+                point.state.state.pose.translation.x / SILengthConstants.kFeetToMeter,
+                point.state.state.pose.translation.y / SILengthConstants.kFeetToMeter,
                 point.state.state.pose.rotation.degree
             )
             Tooltip.install(

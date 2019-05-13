@@ -7,6 +7,9 @@ import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
+import org.ghrobotics.lib.mathematics.units.SIConstants
+import org.ghrobotics.lib.mathematics.units.SILengthConstants
+import org.ghrobotics.lib.mathematics.units.meter
 import tornadofx.data
 import tornadofx.multi
 import tornadofx.style
@@ -57,16 +60,16 @@ object FieldChart : LineChart<Number, Number>(
     fun addRobotPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         robotSeries.data(
-            pose2d.translation.x.feet,
-            pose2d.translation.y.feet
+            pose2d.translation.x / SILengthConstants.kFeetToMeter,
+            pose2d.translation.y / SILengthConstants.kFeetToMeter
         )
     }
 
     fun addPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         pathSeries.data(
-            pose2d.translation.x.feet,
-            pose2d.translation.y.feet
+            pose2d.translation.x / SILengthConstants.kFeetToMeter,
+            pose2d.translation.y / SILengthConstants.kFeetToMeter
         )
     }
 
@@ -74,8 +77,8 @@ object FieldChart : LineChart<Number, Number>(
         robotBoundingBoxSeries.data.clear()
         getRobotBoundingBox(pose2d).forEach {
             robotBoundingBoxSeries.data(
-                it.translation.x.feet,
-                it.translation.y.feet
+                it.translation.x / SILengthConstants.kFeetToMeter,
+                it.translation.y / SILengthConstants.kFeetToMeter
             )
         }
     }
@@ -84,8 +87,8 @@ object FieldChart : LineChart<Number, Number>(
         visionTargetSeries.data.clear()
         newVisionTargets.forEach {
             val data = XYChart.Data<Number, Number>(
-                it.translation.x.feet,
-                it.translation.y.feet
+                it.translation.x / SILengthConstants.kFeetToMeter,
+                it.translation.y / SILengthConstants.kFeetToMeter
             )
             data.node = VisionTargetNode(
                 it.rotation,

@@ -39,7 +39,6 @@ allprojects {
 
         // WPILib and Vendors
         wpi.deps.wpilib().forEach { compile(it) }
-        wpi.deps.vendor.java().forEach { compile(it) }
 
         native(
             group = "edu.wpi.first.ntcore",
@@ -48,7 +47,8 @@ allprojects {
             classifierFunction = ::wpilibClassifier
         )
 
-        compile("org.ghrobotics:FalconLibrary:d810d12")
+        compile("org.ghrobotics.FalconLibrary:core:41e7b58")
+        compile("org.ghrobotics.FalconLibrary:wpi:41e7b58")
 
         // TornadoFX
         compile("no.tornado:tornadofx:1.7.17")
