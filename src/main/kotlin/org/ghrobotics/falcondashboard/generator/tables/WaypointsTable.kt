@@ -55,7 +55,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             setOnEditCommit {
                 val history = it.rowValue
                 this@WaypointsTable.items[it.tablePosition.row] = Pose2d(
-                    Translation2d(it.newValue / SILengthConstants.kFeetToMeter, history.translation.y),
+                    Translation2d(it.newValue.feet.value, history.translation.y),
                     history.rotation
                 )
                 this@WaypointsTable.refresh()
