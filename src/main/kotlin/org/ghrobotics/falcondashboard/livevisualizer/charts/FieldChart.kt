@@ -7,9 +7,8 @@ import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import org.ghrobotics.lib.mathematics.units.SIConstants
 import org.ghrobotics.lib.mathematics.units.SILengthConstants
-import org.ghrobotics.lib.mathematics.units.meter
+import org.ghrobotics.lib.mathematics.units.inch
 import tornadofx.data
 import tornadofx.multi
 import tornadofx.style
@@ -30,9 +29,9 @@ object FieldChart : LineChart<Number, Number>(
         }
         lookup(".chart-plot-background").style +=
             "-fx-background-image: url(\"chart-background.png\");" +
-            "-fx-background-size: stretch;" +
-            "-fx-background-position: top right;" +
-            "-fx-background-repeat: no-repeat;"
+                "-fx-background-size: stretch;" +
+                "-fx-background-position: top right;" +
+                "-fx-background-repeat: no-repeat;"
 
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
@@ -107,6 +106,8 @@ object FieldChart : LineChart<Number, Number>(
             Pose2d(Translation2d(Properties.robotLength / 2, Properties.robotWidth / 2))
         )
 
+        val mid = center.transformBy(Pose2d(Translation2d(Properties.robotLength / 2.0 + 4.inch, 0.inch)))
+
         val bl = center.transformBy(
             Pose2d(Translation2d(-Properties.robotLength / 2, -Properties.robotWidth / 2))
         )
@@ -114,7 +115,7 @@ object FieldChart : LineChart<Number, Number>(
         val br = center.transformBy(
             Pose2d(Translation2d(Properties.robotLength / 2, -Properties.robotWidth / 2))
         )
-        return arrayOf(tl, tr, br, bl, tl)
+        return arrayOf(tl, tr, mid, br, bl, tl)
     }
 
     fun clear() {
