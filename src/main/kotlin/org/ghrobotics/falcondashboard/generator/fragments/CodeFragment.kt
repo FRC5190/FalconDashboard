@@ -5,9 +5,9 @@ import javafx.scene.text.Font
 import kfoenix.jfxtextarea
 import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
-import org.ghrobotics.lib.mathematics.units.SILengthConstants
-import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.meter
+import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
+import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
+import org.ghrobotics.lib.mathematics.units.inFeet
 import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
@@ -52,9 +52,9 @@ class CodeFragment : Fragment() {
                 append("    wayPoints = listOf(\n")
                 GeneratorView.waypoints.forEach {
                     append(
-                        "        Pose2d(${dm.format(it.translation.x / SILengthConstants.kFeetToMeter)}.feet, " +
-                            "${dm.format(it.translation.y / SILengthConstants.kFeetToMeter)}.feet, " +
-                            "${dm.format(it.rotation.degree)}.degree)"
+                        "        Pose2d(${dm.format(it.translation.x_u.inFeet())}.feet, " +
+                            "${dm.format(it.translation.y_u.inFeet())}.feet, " +
+                            "Rotation2d.fromDegrees(${dm.format(it.rotation.degrees)}))"
                     )
                     if (it != GeneratorView.waypoints.last()) append(",")
                     append("\n")

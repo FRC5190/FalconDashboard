@@ -1,5 +1,7 @@
 package org.ghrobotics.falcondashboard.generator.tables
 
+import edu.wpi.first.wpilibj.geometry.Pose2d
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.control.TableRow
 import javafx.scene.control.TableView
@@ -10,28 +12,26 @@ import javafx.scene.input.TransferMode
 import javafx.util.converter.DoubleStringConverter
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable.setRowFactory
-import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import org.ghrobotics.lib.mathematics.units.SILengthConstants
-import org.ghrobotics.lib.mathematics.units.degree
+import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
+import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
 import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.meter
+import org.ghrobotics.lib.mathematics.units.inFeet
 import tornadofx.column
-import tornadofx.times
 import kotlin.math.round
 
 object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
 
     private val columnX = column<Pose2d, Double>("X") {
-        SimpleObjectProperty(round(it.value.translation.x / SILengthConstants.kFeetToMeter * 1E3) / 1E3)
+        SimpleObjectProperty(round(it.value.translation.x_u.inFeet() * 1E3) / 1E3)
     }
 
     private val columnY = column<Pose2d, Double>("Y") {
-        SimpleObjectProperty(round(it.value.translation.y / SILengthConstants.kFeetToMeter * 1E3) / 1E3)
+        SimpleObjectProperty(round(it.value.translation.y_u.inFeet() * 1E3) / 1E3)
     }
 
     private val columnAngle = column<Pose2d, Double>("Angle") {
-        SimpleObjectProperty(round(it.value.rotation.degree))
+        SimpleObjectProperty(round(it.value.rotation.degrees))
     }
 
     private val cellFactory = {
@@ -55,7 +55,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             setOnEditCommit {
                 val history = it.rowValue
                 this@WaypointsTable.items[it.tablePosition.row] = Pose2d(
-                    Translation2d(it.newValue.feet.value, history.translation.y),
+                    Translation2d(it.newValue.feet, history.translation.y_u),
                     history.rotation
                 )
                 this@WaypointsTable.refresh()
@@ -66,7 +66,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             setOnEditCommit {
                 val history = it.rowValue
                 this@WaypointsTable.items[it.tablePosition.row] = Pose2d(
-                    Translation2d(history.translation.x, it.newValue.feet.value),
+                    Translation2d(history.translation.x_u, it.newValue.feet),
                     history.rotation
                 )
                 this@WaypointsTable.refresh()
@@ -78,7 +78,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
                 val history = it.rowValue
                 this@WaypointsTable.items[it.tablePosition.row] = Pose2d(
                     history.translation,
-                    it.newValue.degree
+                    Rotation2d.fromDegrees(it.newValue)
                 )
                 this@WaypointsTable.refresh()
             }

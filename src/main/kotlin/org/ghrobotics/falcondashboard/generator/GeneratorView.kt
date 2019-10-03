@@ -1,5 +1,7 @@
 package org.ghrobotics.falcondashboard.generator
 
+import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
@@ -26,12 +28,10 @@ import org.ghrobotics.falcondashboard.generator.fragments.WaypointFragment
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable
 import org.ghrobotics.lib.mathematics.epsilonEquals
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.trajectory.DefaultTrajectoryGenerator
-import org.ghrobotics.lib.mathematics.twodim.trajectory.PathFinder
-import org.ghrobotics.lib.mathematics.twodim.trajectory.constraints.CentripetalAccelerationConstraint
-import org.ghrobotics.lib.mathematics.units.degree
-import org.ghrobotics.lib.mathematics.units.derivedunits.acceleration
-import org.ghrobotics.lib.mathematics.units.derivedunits.velocity
+import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryGenerator
+import org.ghrobotics.lib.mathematics.twodim.trajectory.optimization.PathFinder
+import org.ghrobotics.lib.mathematics.units.derived.acceleration
+import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.feet
 import tornadofx.*
 
@@ -130,11 +130,21 @@ class GeneratorView : View() {
 
     companion object {
         val waypoints = observableList(
-            Pose2d(1.5.feet, 23.feet, 0.degree),
-            Pose2d(11.5.feet, 23.feet, 0.degree)
+            Pose2d(1.5.feet, 23.feet, Rotation2d()),
+            Pose2d(11.5.feet, 23.feet, Rotation2d())
         )
 
-        val trajectory = SimpleObjectProperty(DefaultTrajectoryGenerator.baseline)
+        val trajectory = SimpleObjectProperty(
+            FalconTrajectoryGenerator.generateTrajectory(
+                waypoints = waypoints,
+                constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value)),
+                startVelocity = startVelocity.value.feet.velocity,
+                endVelocity = endVelocity.value.feet.velocity,
+                maxVelocity = maxVelocity.value.feet.velocity,
+                maxAcceleration = maxAcceleration.value.feet.acceleration,
+                reversed = reversed.value
+            )
+        )
 
         init {
             update()
@@ -175,15 +185,14 @@ class GeneratorView : View() {
             } else waypoints.toList()
 
             this.trajectory.set(
-                DefaultTrajectoryGenerator.generateTrajectory(
-                    wayPoints = wayPoints,
-                    constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value.feet.acceleration)),
+                FalconTrajectoryGenerator.generateTrajectory(
+                    waypoints = wayPoints,
+                    constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value)),
                     startVelocity = startVelocity.value.feet.velocity,
                     endVelocity = endVelocity.value.feet.velocity,
                     maxVelocity = maxVelocity.value.feet.velocity,
                     maxAcceleration = maxAcceleration.value.feet.acceleration,
-                    reversed = reversed.value,
-                    optimizeSplines = optimize.value
+                    reversed = reversed.value
                 )
             )
 

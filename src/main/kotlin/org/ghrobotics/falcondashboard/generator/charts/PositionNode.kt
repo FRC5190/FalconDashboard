@@ -1,22 +1,21 @@
 package org.ghrobotics.falcondashboard.generator.charts
 
+import edu.wpi.first.wpilibj.geometry.Pose2d
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.beans.property.SimpleObjectProperty
-import javafx.geometry.Pos
 import javafx.scene.Cursor
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
-import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.mapprop
-import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import org.ghrobotics.lib.mathematics.units.Rotation2d
-import org.ghrobotics.lib.mathematics.units.degree
 import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.radian
-import tornadofx.*
+import tornadofx.box
+import tornadofx.em
+import tornadofx.multi
+import tornadofx.style
 
 class PositionNode(
     private val data: XYChart.Data<Number, Number>,
@@ -81,13 +80,14 @@ class PositionNode(
         }
 
         var rotating = false
-        var rotationOffset = 0.degree
+        var rotationOffset = Rotation2d()
 
         setOnMousePressed { event ->
             if (!rotating && !dragging) {
                 rotating = true
                 robotNode.robotRotation.unbind()
-                rotationOffset = robotNode.robotRotation.get().degree - event.angleRelativeToNode()
+                rotationOffset =
+                    Rotation2d.fromDegrees(robotNode.robotRotation.get()) - event.angleRelativeToNode()
             }
         }
 
@@ -95,7 +95,7 @@ class PositionNode(
             if (rotating) {
                 val angle = event.angleRelativeToNode()
 
-                robotNode.robotRotation.set((angle + rotationOffset).degree)
+                robotNode.robotRotation.set((angle + rotationOffset).degrees)
             }
         }
 
@@ -104,7 +104,7 @@ class PositionNode(
                 rotating = false
                 simpleObjectProperty.value = Pose2d(
                     simpleObjectProperty.value.translation,
-                    -(robotNode.robotRotation.value.degree)
+                    Rotation2d.fromDegrees(-robotNode.robotRotation.value)
                 )
                 robotNode.bindRobotRotation()
             }
@@ -120,8 +120,7 @@ class PositionNode(
 
     private fun MouseEvent.angleRelativeToNode(): Rotation2d {
         val (localMouseX, localMouseY) = locationRelativeToNode()
-
-        return Math.atan2(localMouseY, localMouseX).radian
+        return Rotation2d(localMouseX, localMouseY)
     }
 
     private fun MouseEvent.locationRelativeToNode(): Pair<Double, Double> {

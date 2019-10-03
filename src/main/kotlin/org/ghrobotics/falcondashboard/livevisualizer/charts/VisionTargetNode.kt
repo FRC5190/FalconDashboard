@@ -1,14 +1,15 @@
 package org.ghrobotics.falcondashboard.livevisualizer.charts
 
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
-import org.ghrobotics.lib.mathematics.units.Rotation2d
+import org.ghrobotics.lib.mathematics.units.inFeet
 import tornadofx.*
 
 class VisionTargetNode(
-    private val rotation: Rotation2d,
+    rotation: Rotation2d,
     scaleProperty: ReadOnlyDoubleProperty
 ) : StackPane() {
 
@@ -18,14 +19,14 @@ class VisionTargetNode(
             borderColor = multi(box(Color.GREEN))
             borderWidth = multi(box(0.25.em))
         }
-        rotate = (-rotation).degree
+        rotate = (-rotation).degrees
 
         usePrefHeight = true
         usePrefWidth = true
         prefHeightProperty()
-            .bind(scaleProperty.multiply(Properties.targetWidth.feet))
+            .bind(scaleProperty.multiply(Properties.targetWidth.inFeet()))
         prefWidthProperty()
-            .bind(scaleProperty.multiply(Properties.targetThiccness.feet))
+            .bind(scaleProperty.multiply(Properties.targetThiccness.inFeet()))
     }
 
 }

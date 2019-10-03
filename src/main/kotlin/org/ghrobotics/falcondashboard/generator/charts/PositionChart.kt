@@ -1,9 +1,9 @@
 package org.ghrobotics.falcondashboard.generator.charts
 
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
-import javafx.scene.chart.XYChart
 import javafx.scene.control.Tooltip
 import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
@@ -11,14 +11,10 @@ import javafx.scene.paint.Paint
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart.setOnMouseClicked
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
-import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TrajectorySamplePoint
-import org.ghrobotics.lib.mathematics.units.SILengthConstants
+import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
+import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
 import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.meter
-import org.ghrobotics.lib.mathematics.units.second
+import org.ghrobotics.lib.mathematics.units.inFeet
 import tornadofx.MultiValue
 import tornadofx.bind
 import tornadofx.data
@@ -29,8 +25,8 @@ object PositionChart : LineChart<Number, Number>(
     NumberAxis(0.0, 27.0, 1.0)
 ) {
 
-    private val seriesXY = XYChart.Series<Number, Number>()
-    private val seriesWayPoints = XYChart.Series<Number, Number>()
+    private val seriesXY = Series<Number, Number>()
+    private val seriesWayPoints = Series<Number, Number>()
 
     init {
         style {
@@ -38,9 +34,9 @@ object PositionChart : LineChart<Number, Number>(
         }
         lookup(".chart-plot-background").style +=
             "-fx-background-image: url(\"chart-background.png\");" +
-            "-fx-background-size: stretch;" +
-            "-fx-background-position: top right;" +
-            "-fx-background-repeat: no-repeat;"
+                "-fx-background-size: stretch;" +
+                "-fx-background-position: top right;" +
+                "-fx-background-repeat: no-repeat;"
 
         axisSortingPolicy = LineChart.SortingPolicy.NONE
         isLegendVisible = false
@@ -57,16 +53,16 @@ object PositionChart : LineChart<Number, Number>(
                 if (it.clickCount == 2) {
                     val plotX = xAxis.getValueForDisplay(xAxis.sceneToLocal(it.sceneX, it.sceneY).x)
                     val plotY = yAxis.getValueForDisplay(yAxis.sceneToLocal(it.sceneX, it.sceneY).y)
-                    GeneratorView.waypoints.add(Pose2d(Translation2d(plotX.feet, plotY.feet)))
+                    GeneratorView.waypoints.add(Pose2d(plotX.feet, plotY.feet, Rotation2d()))
                 }
             }
         }
 
         seriesWayPoints.data
             .bind(GeneratorView.waypoints) {
-                val data = XYChart.Data<Number, Number>(
-                    it.translation.x / SILengthConstants.kFeetToMeter,
-                    it.translation.y / SILengthConstants.kFeetToMeter
+                val data = Data<Number, Number>(
+                    it.translation.x_u.inFeet(),
+                    it.translation.y_u.inFeet()
                 )
                 val currentPose2d = SimpleObjectProperty(it)
                 currentPose2d.addListener { _, oldPose, newPose ->
@@ -92,15 +88,19 @@ object PositionChart : LineChart<Number, Number>(
     private fun updateSeriesXY() {
         seriesXY.data.clear()
 
-        val iterator = GeneratorView.trajectory.value.iterator()
+        val duration = GeneratorView.trajectory.value.totalTimeSeconds
+        var t = 0.0
+        val dt = 0.02
 
-        while (!iterator.isDone) {
-            val point: TrajectorySamplePoint<TimedEntry<Pose2dWithCurvature>> =
-                iterator.advance(0.02.second)
+        while (t <= duration) {
+            val point = GeneratorView.trajectory.value.sample(t)
+            t += dt
+
+
             val data = seriesXY.data(
-                point.state.state.pose.translation.x / SILengthConstants.kFeetToMeter,
-                point.state.state.pose.translation.y / SILengthConstants.kFeetToMeter,
-                point.state.state.pose.rotation.degree
+                point.poseMeters.translation.x_u.inFeet(),
+                point.poseMeters.translation.y_u.inFeet(),
+                point.poseMeters.rotation.degrees
             )
             Tooltip.install(
                 data.node,
