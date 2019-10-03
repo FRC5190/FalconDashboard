@@ -1,21 +1,15 @@
 package org.ghrobotics.falcondashboard.generator.charts
 
+import edu.wpi.first.wpilibj.trajectory.Trajectory
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
-import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import org.ghrobotics.falcondashboard.generator.GeneratorView
-import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2dWithCurvature
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedEntry
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TimedTrajectory
-import org.ghrobotics.lib.mathematics.twodim.trajectory.types.TrajectorySamplePoint
-import org.ghrobotics.lib.mathematics.units.derivedunits.feetPerSecond
-import org.ghrobotics.lib.mathematics.units.second
 import tornadofx.MultiValue
 import tornadofx.data
 import tornadofx.style
-import kotlin.math.absoluteValue
+import kotlin.math.abs
 
 object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
 
@@ -27,7 +21,7 @@ object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
 
         setMinSize(54 * 25.0, 27 * 25.0)
 
-        axisSortingPolicy = LineChart.SortingPolicy.NONE
+        axisSortingPolicy = SortingPolicy.NONE
         isLegendVisible = false
         createSymbols = false
         animated = false
@@ -36,17 +30,20 @@ object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
         GeneratorView.trajectory.addListener { _, _, newValue -> update(newValue) }
     }
 
-    fun update(trajectory: TimedTrajectory<Pose2dWithCurvature>) {
+    private fun update(trajectory: Trajectory) {
         data.clear()
 
-        val seriesVelocity = XYChart.Series<Number, Number>()
+        val seriesVelocity = Series<Number, Number>()
 
         with(seriesVelocity) {
-            val iterator = trajectory.iterator()
+            val duration = trajectory.totalTimeSeconds
+            var t = 0.0
+            val dt = 0.02
 
-            while (!iterator.isDone) {
-                val point: TrajectorySamplePoint<TimedEntry<Pose2dWithCurvature>> = iterator.advance(0.02.second)
-                data(point.state.t.second, point.state.velocity.feetPerSecond.absoluteValue)
+            while (t <= duration) {
+                val point = trajectory.sample(t)
+                t += dt
+                data(point.timeSeconds, abs(point.velocityMetersPerSecond) * 3.2808)
             }
             this@VelocityChart.data.add(this)
         }

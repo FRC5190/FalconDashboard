@@ -1,5 +1,6 @@
 package org.ghrobotics.falcondashboard.generator.charts
 
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.beans.property.ReadOnlyDoubleProperty
 import javafx.beans.property.ReadOnlyProperty
 import javafx.beans.property.SimpleDoubleProperty
@@ -7,7 +8,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.mapprop
-import org.ghrobotics.lib.mathematics.units.Rotation2d
+import org.ghrobotics.lib.mathematics.units.inFeet
 import tornadofx.*
 
 open class RobotNode(
@@ -21,7 +22,7 @@ open class RobotNode(
         robotRotation
             .bind(mapprop<Rotation2d, Number>(
                 robotRotationProperty
-            ) { (-value).degree })
+            ) { (-value).degrees })
     }
 
     val robotPane = object : StackPane() {
@@ -37,9 +38,9 @@ open class RobotNode(
             usePrefHeight = true
             usePrefWidth = true
             prefHeightProperty()
-                .bind(scaleProperty.multiply(Properties.robotWidth.feet))
+                .bind(scaleProperty.multiply(Properties.robotWidth.inFeet()))
             prefWidthProperty()
-                .bind(scaleProperty.multiply(Properties.robotLength.feet))
+                .bind(scaleProperty.multiply(Properties.robotLength.inFeet()))
         }
     }
 

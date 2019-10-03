@@ -47,8 +47,8 @@ allprojects {
             classifierFunction = ::wpilibClassifier
         )
 
-        compile("org.ghrobotics.FalconLibrary:core:41e7b58")
-        compile("org.ghrobotics.FalconLibrary:wpi:41e7b58")
+        compile("org.ghrobotics.FalconLibrary:core:01aae7b")
+        compile("org.ghrobotics.FalconLibrary:wpi:01aae7b")
 
         // TornadoFX
         compile("no.tornado:tornadofx:1.7.17")

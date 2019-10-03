@@ -1,10 +1,10 @@
 package org.ghrobotics.falcondashboard.generator.fragments
 
+import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.beans.property.SimpleDoubleProperty
 import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.units.degree
 import org.ghrobotics.lib.mathematics.units.feet
 import tornadofx.*
 
@@ -29,7 +29,7 @@ class WaypointFragment : Fragment() {
                 text = "Add"
                 prefWidth = 100.0
                 action {
-                    GeneratorView.waypoints.add(Pose2d(x.value.feet, y.value.feet, a.value.degree))
+                    GeneratorView.waypoints.add(Pose2d(x.value.feet, y.value.feet, Rotation2d.fromDegrees(a.value)))
                     close()
                 }
             }
