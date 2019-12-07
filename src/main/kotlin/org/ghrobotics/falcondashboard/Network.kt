@@ -7,14 +7,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
-import org.ghrobotics.lib.debug.LiveDashboard
+import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.wrappers.networktables.FalconNetworkTable
 
 object Network {
 
     init {
-        LiveDashboard.liveDashboardTable.instance.startClient(Settings.ip.value)
+        FalconNetworkTable.getTable("Live_Dashboard").instance.startClient(Settings.ip.value)
 
         var lastIsFollowingPath = false
 
@@ -25,26 +26,26 @@ object Network {
             while (isActive) {
 
                 ui {
-                    FieldChart.updateVisionTargets(LiveDashboard.visionTargets)
+                    FieldChart.updateVisionTargets(FalconDashboard.visionTargets)
                 }
 
                 val robotPose = Pose2d(
-                    LiveDashboard.robotX.feet,
-                    LiveDashboard.robotY.feet,
-                    Rotation2d(LiveDashboard.robotHeading)
+                    FalconDashboard.robotX.feet,
+                    FalconDashboard.robotY.feet,
+                    Rotation2d(FalconDashboard.robotHeading)
                 )
 
                 val pathPose = Pose2d(
-                    LiveDashboard.pathX.feet,
-                    LiveDashboard.pathY.feet,
-                    Rotation2d(LiveDashboard.pathHeading)
+                    FalconDashboard.pathX.feet,
+                    FalconDashboard.pathY.feet,
+                    Rotation2d(FalconDashboard.pathHeading)
                 )
 
                 val updateRobotPose = robotPose != lastRobotPose
                 if (updateRobotPose) ui { FieldChart.updateRobotPose(robotPose) }
                 lastRobotPose = robotPose
 
-                if (LiveDashboard.isFollowingPath) {
+                if (FalconDashboard.isFollowingPath) {
                     if (!lastIsFollowingPath) {
                         // Only reset path cache when another path starts
                         ui { FieldChart.clear() }

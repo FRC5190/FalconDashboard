@@ -1,17 +1,13 @@
 package org.ghrobotics.falcondashboard.generator.fragments
 
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
 import javafx.scene.layout.Priority
 import javafx.scene.text.Font
 import kfoenix.jfxtextarea
-import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
-import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
-import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
-import org.ghrobotics.lib.mathematics.units.inFeet
 import tornadofx.*
 import java.awt.Desktop
 import java.net.URI
-import java.text.DecimalFormat
 
 class CodeFragment : Fragment() {
     override val root = vbox {
@@ -31,44 +27,7 @@ class CodeFragment : Fragment() {
 
             vgrow = Priority.ALWAYS
 
-            text = buildString {
-
-                append(
-                    "import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d\n" +
-                        "import org.ghrobotics.lib.mathematics.twodim.trajectory.DefaultTrajectoryGenerator\n" +
-                        "import org.ghrobotics.lib.mathematics.twodim.trajectory.constraints.CentripetalAccelerationConstraint\n" +
-                        "import org.ghrobotics.lib.mathematics.units.degree\n" +
-                        "import org.ghrobotics.lib.mathematics.units.derivedunits.acceleration\n" +
-                        "import org.ghrobotics.lib.mathematics.units.derivedunits.velocity\n" +
-                        "import org.ghrobotics.lib.mathematics.units.feet\n\n\n\n"
-                )
-
-                val name = Settings.name.value.decapitalize()
-                    .replace("\\s+".toRegex(), "")
-
-                val dm = DecimalFormat("##.###")
-
-                append("val $name = DefaultTrajectoryGenerator.generateTrajectory(\n")
-                append("    wayPoints = listOf(\n")
-                GeneratorView.waypoints.forEach {
-                    append(
-                        "        Pose2d(${dm.format(it.translation.x_u.inFeet())}.feet, " +
-                            "${dm.format(it.translation.y_u.inFeet())}.feet, " +
-                            "Rotation2d.fromDegrees(${dm.format(it.rotation.degrees)}))"
-                    )
-                    if (it != GeneratorView.waypoints.last()) append(",")
-                    append("\n")
-                }
-                append("    ),\n")
-                append(
-                    "    constraints = listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration),\n" +
-                        "    startVelocity = 0.0.feet.velocity,\n" +
-                        "    endVelocity = 0.0.feet.velocity,\n" +
-                        "    maxVelocity = ${Settings.maxVelocity.value}.feet.velocity,\n" +
-                        "    maxAcceleration = ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
-                        "    reversed = ${Settings.reversed.value}\n)"
-                )
-            }
+            text = TrajectoryUtil.serializeTrajectory(GeneratorView.trajectory.value)
         }
         vbox {
             style {

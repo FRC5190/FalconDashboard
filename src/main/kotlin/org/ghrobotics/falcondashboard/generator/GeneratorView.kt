@@ -1,7 +1,10 @@
 package org.ghrobotics.falcondashboard.generator
 
 import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
+import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
+import edu.wpi.first.wpilibj.util.Units
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
@@ -28,7 +31,7 @@ import org.ghrobotics.falcondashboard.generator.fragments.WaypointFragment
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable
 import org.ghrobotics.lib.mathematics.epsilonEquals
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryGenerator
+import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryConfig
 import org.ghrobotics.lib.mathematics.twodim.trajectory.optimization.PathFinder
 import org.ghrobotics.lib.mathematics.units.derived.acceleration
 import org.ghrobotics.lib.mathematics.units.derived.velocity
@@ -101,7 +104,7 @@ class GeneratorView : View() {
                 }
                 jfxbutton {
                     prefWidth = 290.0
-                    text = "Generate"
+                    text = "Generate JSON"
                     action {
                         find<CodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
                     }
@@ -134,17 +137,14 @@ class GeneratorView : View() {
             Pose2d(11.5.feet, 23.feet, Rotation2d())
         )
 
-        val trajectory = SimpleObjectProperty(
-            FalconTrajectoryGenerator.generateTrajectory(
-                waypoints = waypoints,
-                constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value)),
-                startVelocity = startVelocity.value.feet.velocity,
-                endVelocity = endVelocity.value.feet.velocity,
-                maxVelocity = maxVelocity.value.feet.velocity,
-                maxAcceleration = maxAcceleration.value.feet.acceleration,
-                reversed = reversed.value
-            )
-        )
+        private val config: TrajectoryConfig =
+            FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
+                .setStartVelocity(startVelocity.value.feet.velocity)
+                .setEndVelocity(endVelocity.value.feet.velocity)
+                .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
+                .setReversed(reversed.value)
+
+        val trajectory = SimpleObjectProperty(TrajectoryGenerator.generateTrajectory(waypoints, config))
 
         init {
             update()
@@ -185,18 +185,15 @@ class GeneratorView : View() {
             } else waypoints.toList()
 
             this.trajectory.set(
-                FalconTrajectoryGenerator.generateTrajectory(
-                    waypoints = wayPoints,
-                    constraints = listOf(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value)),
-                    startVelocity = startVelocity.value.feet.velocity,
-                    endVelocity = endVelocity.value.feet.velocity,
-                    maxVelocity = maxVelocity.value.feet.velocity,
-                    maxAcceleration = maxAcceleration.value.feet.acceleration,
-                    reversed = reversed.value
+                TrajectoryGenerator.generateTrajectory(
+                    wayPoints,
+                    FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
+                        .setStartVelocity(startVelocity.value.feet.velocity)
+                        .setEndVelocity(endVelocity.value.feet.velocity)
+                        .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
+                        .setReversed(reversed.value)
                 )
             )
-
-            //VelocityChart.update(trajectory)
         }
     }
 }

@@ -20,15 +20,20 @@ import tornadofx.bind
 import tornadofx.data
 import tornadofx.style
 
+/**
+ * Chart that is used to display the field view for the trajectory
+ * generator.
+ */
 object PositionChart : LineChart<Number, Number>(
     NumberAxis(0.0, 54.0, 1.0),
     NumberAxis(0.0, 27.0, 1.0)
 ) {
-
+    // Series
     private val seriesXY = Series<Number, Number>()
     private val seriesWayPoints = Series<Number, Number>()
 
     init {
+        // Set styles
         style {
             backgroundColor = MultiValue(arrayOf<Paint>(Color.LIGHTGRAY))
         }
@@ -38,7 +43,7 @@ object PositionChart : LineChart<Number, Number>(
                 "-fx-background-position: top right;" +
                 "-fx-background-repeat: no-repeat;"
 
-        axisSortingPolicy = LineChart.SortingPolicy.NONE
+        axisSortingPolicy = SortingPolicy.NONE
         isLegendVisible = false
         animated = false
         createSymbols = true
@@ -48,6 +53,7 @@ object PositionChart : LineChart<Number, Number>(
         data.add(seriesXY)
         data.add(seriesWayPoints)
 
+        // Add waypoint on double click
         setOnMouseClicked {
             if (it.button == MouseButton.PRIMARY) {
                 if (it.clickCount == 2) {
@@ -58,6 +64,7 @@ object PositionChart : LineChart<Number, Number>(
             }
         }
 
+        // Bind data to waypoints table
         seriesWayPoints.data
             .bind(GeneratorView.waypoints) {
                 val data = Data<Number, Number>(
@@ -85,6 +92,9 @@ object PositionChart : LineChart<Number, Number>(
         }
     }
 
+    /**
+     * Updates the trajectory on the field.
+     */
     private fun updateSeriesXY() {
         seriesXY.data.clear()
 
@@ -95,7 +105,6 @@ object PositionChart : LineChart<Number, Number>(
         while (t <= duration) {
             val point = GeneratorView.trajectory.value.sample(t)
             t += dt
-
 
             val data = seriesXY.data(
                 point.poseMeters.translation.x_u.inFeet(),
@@ -117,5 +126,4 @@ object PositionChart : LineChart<Number, Number>(
     }
 
     override fun resize(width: Double, height: Double) = super.resize(height / 27 * 54, height)
-
 }
