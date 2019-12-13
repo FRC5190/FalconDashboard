@@ -22,6 +22,7 @@ object Settings {
     val name = SimpleStringProperty("Baseline")
     val reversed = SimpleBooleanProperty(false)
     val optimize = SimpleBooleanProperty(true)
+    val clampedCubic = SimpleBooleanProperty(true)
     val autoPathFinding = SimpleBooleanProperty(false)
     val startVelocity = SimpleDoubleProperty(0.0)
     val endVelocity = SimpleDoubleProperty(0.0)
@@ -34,6 +35,7 @@ object Settings {
         write {
             beginArray()
             value(it.reversed.value)
+            value(it.clampedCubic.value)
             value(it.optimize.value)
             value(it.autoPathFinding.value)
             value(it.startVelocity.value)
@@ -46,15 +48,16 @@ object Settings {
         }
         read {
             beginArray()
-            Settings.reversed.set(nextBoolean())
-            Settings.optimize.set(nextBoolean())
-            Settings.autoPathFinding.set(nextBoolean())
-            Settings.startVelocity.set(nextDouble())
-            Settings.endVelocity.set(nextDouble())
-            Settings.maxVelocity.set(nextDouble())
-            Settings.maxAcceleration.set(nextDouble())
-            Settings.maxCentripetalAcceleration.set(nextDouble())
-            Settings.ip.set(nextString())
+            reversed.set(nextBoolean())
+            clampedCubic.set(nextBoolean())
+            optimize.set(nextBoolean())
+            autoPathFinding.set(nextBoolean())
+            startVelocity.set(nextDouble())
+            endVelocity.set(nextDouble())
+            maxVelocity.set(nextDouble())
+            maxAcceleration.set(nextDouble())
+            maxCentripetalAcceleration.set(nextDouble())
+            ip.set(nextString())
             endArray()
             return@read Settings
         }

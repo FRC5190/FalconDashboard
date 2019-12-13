@@ -10,11 +10,9 @@ import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
-import kfoenix.jfxbutton
-import kfoenix.jfxcheckbox
-import kfoenix.jfxtabpane
-import kfoenix.jfxtextfield
+import kfoenix.*
 import org.ghrobotics.falcondashboard.Settings.autoPathFinding
+import org.ghrobotics.falcondashboard.Settings.clampedCubic
 import org.ghrobotics.falcondashboard.Settings.endVelocity
 import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
@@ -61,6 +59,11 @@ class GeneratorView : View() {
                 paddingAll = 5
                 text = "Reversed"
                 bind(reversed)
+            }
+            jfxcheckbox {
+                paddingAll = 5
+                text = "Clamped Cubic (Ignore interior heading)?"
+                bind(clampedCubic)
             }
             jfxcheckbox {
                 paddingAll = 5
@@ -150,6 +153,7 @@ class GeneratorView : View() {
             update()
             waypoints.onChange { update() }
             reversed.onChange { update() }
+            clampedCubic.onChange { update() }
             optimize.onChange { update() }
             autoPathFinding.onChange { update() }
 
@@ -184,16 +188,21 @@ class GeneratorView : View() {
                 }.flatten().toSet().toList()
             } else waypoints.toList()
 
-            this.trajectory.set(
-                TrajectoryGenerator.generateTrajectory(
-                    wayPoints,
-                    FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
-                        .setStartVelocity(startVelocity.value.feet.velocity)
-                        .setEndVelocity(endVelocity.value.feet.velocity)
-                        .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
-                        .setReversed(reversed.value)
-                )
-            )
+            val config = FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
+                .setStartVelocity(startVelocity.value.feet.velocity)
+                .setEndVelocity(endVelocity.value.feet.velocity)
+                .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
+                .setReversed(reversed.value)
+
+            if(clampedCubic.value) {
+                val startPose = wayPoints.first()
+                val endPose = waypoints.last()
+                val interiorWaypoints = wayPoints.subList(1, waypoints.size - 1).map { it.translation }
+
+                this.trajectory.set(TrajectoryGenerator.generateTrajectory(startPose, interiorWaypoints, endPose, config))
+            } else {
+                this.trajectory.set(TrajectoryGenerator.generateTrajectory(wayPoints, config))
+            }
         }
     }
 }
