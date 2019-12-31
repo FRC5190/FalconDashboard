@@ -6,7 +6,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     application
     kotlin("jvm") version "1.3.61"
-    id("edu.wpi.first.GradleRIO") version "2020.1.1-beta-3a"
+    id("edu.wpi.first.GradleRIO") version "2020.1.1"
     id("com.google.osdetector") version "1.6.2"
 }
 
@@ -35,7 +35,7 @@ allprojects {
 
         // Kotlin Standard Library and Coroutines
         compile(kotlin("stdlib"))
-        compile("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.1.0")
+        compile("org.jetbrains.kotlinx", "kotlinx-coroutines-core", "1.3.3")
 
         // WPILib and Vendors
         wpi.deps.wpilib().forEach { compile(it) }
@@ -47,8 +47,8 @@ allprojects {
             classifierFunction = ::wpilibClassifier
         )
 
-        compile("org.ghrobotics.FalconLibrary:core:d23c13ec24")
-        compile("org.ghrobotics.FalconLibrary:wpi:d23c13ec24")
+        compile("org.ghrobotics.FalconLibrary:core:2020.1.1")
+        compile("org.ghrobotics.FalconLibrary:wpi:2020.1.1")
 
         // TornadoFX
         compile("no.tornado:tornadofx:1.7.17")
