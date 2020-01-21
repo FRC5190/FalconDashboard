@@ -24,9 +24,9 @@ class VisionTargetNode(
         usePrefHeight = true
         usePrefWidth = true
         prefHeightProperty()
-            .bind(scaleProperty.multiply(Properties.targetWidth.inFeet()))
+            .bind(scaleProperty.multiply(Properties.kTargetWidth.inFeet()))
         prefWidthProperty()
-            .bind(scaleProperty.multiply(Properties.targetThiccness.inFeet()))
+            .bind(scaleProperty.multiply(Properties.kTargetThickness.inFeet()))
     }
 
 }

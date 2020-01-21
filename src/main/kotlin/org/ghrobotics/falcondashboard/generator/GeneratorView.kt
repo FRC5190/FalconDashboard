@@ -10,7 +10,10 @@ import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
-import kfoenix.*
+import kfoenix.jfxbutton
+import kfoenix.jfxcheckbox
+import kfoenix.jfxtabpane
+import kfoenix.jfxtextfield
 import org.ghrobotics.falcondashboard.Settings.autoPathFinding
 import org.ghrobotics.falcondashboard.Settings.clampedCubic
 import org.ghrobotics.falcondashboard.Settings.endVelocity
@@ -18,7 +21,6 @@ import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxVelocity
 import org.ghrobotics.falcondashboard.Settings.name
-import org.ghrobotics.falcondashboard.Settings.optimize
 import org.ghrobotics.falcondashboard.Settings.reversed
 import org.ghrobotics.falcondashboard.Settings.startVelocity
 import org.ghrobotics.falcondashboard.createNumericalEntry
@@ -62,13 +64,8 @@ class GeneratorView : View() {
             }
             jfxcheckbox {
                 paddingAll = 5
-                text = "Clamped Cubic (Ignore interior heading)?"
+                text = "Clamped Cubic"
                 bind(clampedCubic)
-            }
-            jfxcheckbox {
-                paddingAll = 5
-                text = "Optimize Curvature"
-                bind(optimize)
             }
             jfxcheckbox {
                 paddingAll = 5
@@ -81,11 +78,6 @@ class GeneratorView : View() {
             createNumericalEntry("Max Velocity (f/s)", maxVelocity)
             createNumericalEntry("Max Acceleration (f/s/s)", maxAcceleration)
             createNumericalEntry("Max Centripetal Acceleration (f/s/s)", maxCentripetalAcceleration)
-
-            jfxbutton {
-                text = "Add Velocity Limit Constraint in Region"
-                maxWidth = 290.0
-            }
 
             this += WaypointsTable
 
@@ -135,7 +127,7 @@ class GeneratorView : View() {
     }
 
     companion object {
-        val waypoints = observableList(
+        val waypoints = observableListOf(
             Pose2d(1.5.feet, 23.feet, Rotation2d()),
             Pose2d(11.5.feet, 23.feet, Rotation2d())
         )
@@ -154,7 +146,6 @@ class GeneratorView : View() {
             waypoints.onChange { update() }
             reversed.onChange { update() }
             clampedCubic.onChange { update() }
-            optimize.onChange { update() }
             autoPathFinding.onChange { update() }
 
             startVelocity.onChange { update() }

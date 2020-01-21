@@ -2,17 +2,10 @@ package org.ghrobotics.falcondashboard
 
 import com.github.salomonbrys.kotson.fromJson
 import com.github.salomonbrys.kotson.registerTypeAdapter
-import com.github.salomonbrys.kotson.value
 import com.google.gson.GsonBuilder
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.scene.Parent
-import javafx.stage.StageStyle
-import tornadofx.Fragment
-import tornadofx.onChange
-import tornadofx.text
-import tornadofx.vbox
 import java.io.File
 import java.io.FileReader
 import java.io.FileWriter
@@ -21,7 +14,6 @@ import java.io.FileWriter
 object Settings {
     val name = SimpleStringProperty("Baseline")
     val reversed = SimpleBooleanProperty(false)
-    val optimize = SimpleBooleanProperty(true)
     val clampedCubic = SimpleBooleanProperty(true)
     val autoPathFinding = SimpleBooleanProperty(false)
     val startVelocity = SimpleDoubleProperty(0.0)
@@ -36,7 +28,6 @@ object Settings {
             beginArray()
             value(it.reversed.value)
             value(it.clampedCubic.value)
-            value(it.optimize.value)
             value(it.autoPathFinding.value)
             value(it.startVelocity.value)
             value(it.endVelocity.value)
@@ -50,7 +41,6 @@ object Settings {
             beginArray()
             reversed.set(nextBoolean())
             clampedCubic.set(nextBoolean())
-            optimize.set(nextBoolean())
             autoPathFinding.set(nextBoolean())
             startVelocity.set(nextDouble())
             endVelocity.set(nextDouble())

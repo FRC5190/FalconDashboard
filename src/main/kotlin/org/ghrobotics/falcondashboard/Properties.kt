@@ -1,11 +1,16 @@
 package org.ghrobotics.falcondashboard
 
-import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.inches
 
+/**
+ * Stores general properties for robots and vision targets.
+ */
 object Properties {
-    val robotLength = 30.inch
-    val robotWidth = 29.inch
+    // Robot Sizes
+    val kRobotLength = 31.inches
+    val kRobotWidth = 29.inches
 
-    val targetWidth = 14.5.inch
-    val targetThiccness = targetWidth / 2
+    // Target Sizes
+    val kTargetWidth = 14.5.inches
+    val kTargetThickness = kTargetWidth / 2
 }

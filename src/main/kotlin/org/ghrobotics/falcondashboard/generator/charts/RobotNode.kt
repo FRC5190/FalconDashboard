@@ -38,9 +38,9 @@ open class RobotNode(
             usePrefHeight = true
             usePrefWidth = true
             prefHeightProperty()
-                .bind(scaleProperty.multiply(Properties.robotWidth.inFeet()))
+                .bind(scaleProperty.multiply(Properties.kRobotWidth.inFeet()))
             prefWidthProperty()
-                .bind(scaleProperty.multiply(Properties.robotLength.inFeet()))
+                .bind(scaleProperty.multiply(Properties.kRobotLength.inFeet()))
         }
     }
 

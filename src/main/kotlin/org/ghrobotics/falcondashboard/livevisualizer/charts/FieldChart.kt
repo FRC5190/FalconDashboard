@@ -102,23 +102,23 @@ object FieldChart : LineChart<Number, Number>(
 
     private fun getRobotBoundingBox(center: Pose2d): Array<Pose2d> {
         val tl = center.transformBy(
-            Transform2d(-Properties.robotLength / 2, Properties.robotWidth / 2, Rotation2d())
+            Transform2d(-Properties.kRobotLength / 2, Properties.kRobotWidth / 2, Rotation2d())
         )
 
         val tr = center.transformBy(
-            Transform2d(Properties.robotLength / 2, Properties.robotWidth / 2, Rotation2d())
+            Transform2d(Properties.kRobotLength / 2, Properties.kRobotWidth / 2, Rotation2d())
         )
 
         val mid = center.transformBy(
-            Transform2d(Properties.robotLength / 2.0 + 4.inch, 0.inch, Rotation2d())
+            Transform2d(Properties.kRobotLength / 2.0 + 4.inch, 0.inch, Rotation2d())
         )
 
         val bl = center.transformBy(
-            Transform2d(-Properties.robotLength / 2, -Properties.robotWidth / 2, Rotation2d())
+            Transform2d(-Properties.kRobotLength / 2, -Properties.kRobotWidth / 2, Rotation2d())
         )
 
         val br = center.transformBy(
-            Transform2d(Properties.robotLength / 2, -Properties.robotWidth / 2, Rotation2d())
+            Transform2d(Properties.kRobotLength / 2, -Properties.kRobotWidth / 2, Rotation2d())
         )
 
         return arrayOf(tl, tr, mid, br, bl, tl)
