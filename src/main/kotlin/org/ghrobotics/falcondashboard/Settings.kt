@@ -56,7 +56,14 @@ object Settings {
     init {
         val file = File("settings.json")
         if (file.exists()) {
-            gson.fromJson<Settings>(FileReader(file))
+            try {
+                gson.fromJson<Settings>(FileReader(file))
+            } catch (e: Exception) {
+                file.delete()
+                val writer = FileWriter(file)
+                writer.write(gson.toJson(Settings))
+                writer.close()
+            }
         } else {
             val writer = FileWriter(file)
             writer.write(gson.toJson(Settings))
