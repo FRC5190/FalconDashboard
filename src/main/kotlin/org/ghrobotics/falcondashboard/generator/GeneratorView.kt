@@ -36,6 +36,8 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.optimization.PathFinder
 import org.ghrobotics.lib.mathematics.units.derived.acceleration
 import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.inMeters
+import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.*
 
 class GeneratorView : View() {
@@ -73,11 +75,11 @@ class GeneratorView : View() {
                 bind(autoPathFinding)
             }
 
-            createNumericalEntry("Start Velocity (f/s)", startVelocity)
-            createNumericalEntry("End Velocity (f/s)", endVelocity)
-            createNumericalEntry("Max Velocity (f/s)", maxVelocity)
-            createNumericalEntry("Max Acceleration (f/s/s)", maxAcceleration)
-            createNumericalEntry("Max Centripetal Acceleration (f/s/s)", maxCentripetalAcceleration)
+            createNumericalEntry("Start Velocity (m/s)", startVelocity)
+            createNumericalEntry("End Velocity (m/s)", endVelocity)
+            createNumericalEntry("Max Velocity (m/s)", maxVelocity)
+            createNumericalEntry("Max Acceleration (m/s/s)", maxAcceleration)
+            createNumericalEntry("Max Centripetal Acceleration (m/s/s)", maxCentripetalAcceleration)
 
             this += WaypointsTable
 
@@ -133,10 +135,10 @@ class GeneratorView : View() {
         )
 
         private val config: TrajectoryConfig =
-            FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
-                .setStartVelocity(startVelocity.value.feet.velocity)
-                .setEndVelocity(endVelocity.value.feet.velocity)
-                .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
+            FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
+                .setStartVelocity(startVelocity.value.meters.velocity)
+                .setEndVelocity(endVelocity.value.meters.velocity)
+                .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
                 .setReversed(reversed.value)
 
         val trajectory = SimpleObjectProperty(TrajectoryGenerator.generateTrajectory(waypoints, config))
@@ -179,10 +181,10 @@ class GeneratorView : View() {
                 }.flatten().toSet().toList()
             } else waypoints.toList()
 
-            val config = FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
-                .setStartVelocity(startVelocity.value.feet.velocity)
-                .setEndVelocity(endVelocity.value.feet.velocity)
-                .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
+            val config = FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
+                .setStartVelocity(startVelocity.value.meters.velocity)
+                .setEndVelocity(endVelocity.value.meters.velocity)
+                .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
                 .setReversed(reversed.value)
 
             if(clampedCubic.value) {

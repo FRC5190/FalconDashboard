@@ -8,13 +8,16 @@ import javafx.scene.control.Tooltip
 import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import org.ghrobotics.falcondashboard.Properties
+import org.ghrobotics.falcondashboard.Properties.kFieldHeight
+import org.ghrobotics.falcondashboard.Properties.kFieldWidth
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart.setOnMouseClicked
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
-import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.inFeet
+import org.ghrobotics.lib.mathematics.units.inMeters
+import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.MultiValue
 import tornadofx.bind
 import tornadofx.data
@@ -25,8 +28,8 @@ import tornadofx.style
  * generator.
  */
 object PositionChart : LineChart<Number, Number>(
-    NumberAxis(0.0, 54.0, 1.0),
-    NumberAxis(0.0, 27.0, 1.0)
+    NumberAxis(0.0, kFieldWidth, 1.0),
+    NumberAxis(0.0, kFieldHeight, 1.0)
 ) {
     // Series
     private val seriesXY = Series<Number, Number>()
@@ -59,7 +62,7 @@ object PositionChart : LineChart<Number, Number>(
                 if (it.clickCount == 2) {
                     val plotX = xAxis.getValueForDisplay(xAxis.sceneToLocal(it.sceneX, it.sceneY).x)
                     val plotY = yAxis.getValueForDisplay(yAxis.sceneToLocal(it.sceneX, it.sceneY).y)
-                    GeneratorView.waypoints.add(Pose2d(plotX.feet, plotY.feet, Rotation2d()))
+                    GeneratorView.waypoints.add(Pose2d(plotX.meters, plotY.meters, Rotation2d()))
                 }
             }
         }
@@ -68,8 +71,8 @@ object PositionChart : LineChart<Number, Number>(
         seriesWayPoints.data
             .bind(GeneratorView.waypoints) {
                 val data = Data<Number, Number>(
-                    it.translation.x_u.inFeet(),
-                    it.translation.y_u.inFeet()
+                    it.translation.x_u.inMeters(),
+                    it.translation.y_u.inMeters()
                 )
                 val currentPose2d = SimpleObjectProperty(it)
                 currentPose2d.addListener { _, oldPose, newPose ->
@@ -107,14 +110,14 @@ object PositionChart : LineChart<Number, Number>(
             t += dt
 
             val data = seriesXY.data(
-                point.poseMeters.translation.x_u.inFeet(),
-                point.poseMeters.translation.y_u.inFeet(),
+                point.poseMeters.translation.x_u.inMeters(),
+                point.poseMeters.translation.y_u.inMeters(),
                 point.poseMeters.rotation.degrees
             )
             Tooltip.install(
                 data.node,
                 Tooltip(
-                    "%2.2f feet, %2.2f feet, %2.2f degrees".format(
+                    "%2.2f metes, %2.2f meters, %2.2f meters".format(
                         data.xValue,
                         data.yValue,
                         data.extraValue
@@ -125,5 +128,5 @@ object PositionChart : LineChart<Number, Number>(
         }
     }
 
-    override fun resize(width: Double, height: Double) = super.resize(height / 27 * 54, height)
+    override fun resize(width: Double, height: Double) = super.resize(height / kFieldHeight * kFieldWidth, height)
 }

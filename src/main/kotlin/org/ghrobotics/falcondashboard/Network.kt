@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
 import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.networktables.FalconNetworkTable
 
 object Network {
@@ -30,15 +30,15 @@ object Network {
                 }
 
                 val robotPose = Pose2d(
-                    FalconDashboard.robotX.feet,
-                    FalconDashboard.robotY.feet,
-                    Rotation2d(FalconDashboard.robotHeading)
+                    FalconDashboard.robotX.meters,
+                    FalconDashboard.robotY.meters,
+                    Rotation2d.fromDegrees(FalconDashboard.robotHeading)
                 )
 
                 val pathPose = Pose2d(
-                    FalconDashboard.pathX.feet,
-                    FalconDashboard.pathY.feet,
-                    Rotation2d(FalconDashboard.pathHeading)
+                    FalconDashboard.pathX.meters,
+                    FalconDashboard.pathY.meters,
+                    Rotation2d.fromDegrees(FalconDashboard.pathHeading)
                 )
 
                 val updateRobotPose = robotPose != lastRobotPose

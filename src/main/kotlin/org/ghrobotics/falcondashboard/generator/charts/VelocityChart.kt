@@ -5,6 +5,7 @@ import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import org.ghrobotics.falcondashboard.Properties.kFieldWidth
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import tornadofx.MultiValue
 import tornadofx.data
@@ -19,7 +20,7 @@ object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
             backgroundColor = MultiValue(arrayOf<Paint>(Color.LIGHTGRAY))
         }
 
-        setMinSize(54 * 25.0, 27 * 25.0)
+        setMinSize(kFieldWidth * 25.0, kFieldWidth * 25.0)
 
         axisSortingPolicy = SortingPolicy.NONE
         isLegendVisible = false

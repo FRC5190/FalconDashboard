@@ -1,5 +1,7 @@
 package org.ghrobotics.falcondashboard
 
+import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.mathematics.units.inches
 
 /**
@@ -13,4 +15,7 @@ object Properties {
     // Target Sizes
     val kTargetWidth = 14.5.inches
     val kTargetThickness = kTargetWidth / 2
+
+    val kFieldWidth = 54.0.feet.inMeters()
+    val kFieldHeight = 27.0.feet.inMeters()
 }

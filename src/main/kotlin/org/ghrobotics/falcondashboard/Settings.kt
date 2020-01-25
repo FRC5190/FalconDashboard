@@ -21,7 +21,7 @@ object Settings {
     val maxVelocity = SimpleDoubleProperty(10.0)
     val maxAcceleration = SimpleDoubleProperty(4.0)
     val maxCentripetalAcceleration = SimpleDoubleProperty(4.0)
-    val ip = SimpleStringProperty("127.0.1.1")
+    val ip = SimpleStringProperty("127.0.0.1")
 
     private val gson = GsonBuilder().registerTypeAdapter<Settings> {
         write {

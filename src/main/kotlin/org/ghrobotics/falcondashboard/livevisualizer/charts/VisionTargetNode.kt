@@ -6,6 +6,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.lib.mathematics.units.inFeet
+import org.ghrobotics.lib.mathematics.units.inMeters
 import tornadofx.*
 
 class VisionTargetNode(
@@ -24,9 +25,9 @@ class VisionTargetNode(
         usePrefHeight = true
         usePrefWidth = true
         prefHeightProperty()
-            .bind(scaleProperty.multiply(Properties.kTargetWidth.inFeet()))
+            .bind(scaleProperty.multiply(Properties.kTargetWidth.inMeters()))
         prefWidthProperty()
-            .bind(scaleProperty.multiply(Properties.kTargetThickness.inFeet()))
+            .bind(scaleProperty.multiply(Properties.kTargetThickness.inMeters()))
     }
 
 }

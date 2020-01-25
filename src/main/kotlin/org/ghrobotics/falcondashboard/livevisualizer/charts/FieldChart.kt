@@ -7,18 +7,21 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
+import org.ghrobotics.falcondashboard.Properties.kFieldHeight
+import org.ghrobotics.falcondashboard.Properties.kFieldWidth
 import org.ghrobotics.lib.mathematics.twodim.geometry.Transform2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
-import org.ghrobotics.lib.mathematics.units.inFeet
-import org.ghrobotics.lib.mathematics.units.inch
+import org.ghrobotics.lib.mathematics.units.*
 import tornadofx.data
 import tornadofx.multi
 import tornadofx.style
 
+
+
 object FieldChart : LineChart<Number, Number>(
-    NumberAxis(0.0, 54.0, 1.0),
-    NumberAxis(0.0, 27.0, 1.0)
+    NumberAxis(0.0, kFieldWidth, 0.5),
+    NumberAxis(0.0, kFieldHeight, 0.5)
 ) {
 
     private val robotSeries = XYChart.Series<Number, Number>()
@@ -51,9 +54,9 @@ object FieldChart : LineChart<Number, Number>(
     }
 
     override fun resize(width: Double, height: Double) {
-        val newWidth = height / 27 * 54
+        val newWidth = height / kFieldHeight * kFieldWidth
         if (newWidth > width) {
-            super.resize(width, width / 54 * 27)
+            super.resize(width, width / kFieldWidth * kFieldHeight)
         } else {
             super.resize(newWidth, height)
         }
@@ -62,16 +65,16 @@ object FieldChart : LineChart<Number, Number>(
     fun addRobotPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         robotSeries.data(
-            pose2d.translation.x_u.inFeet(),
-            pose2d.translation.y_u.inFeet()
+            pose2d.translation.x_u.inMeters(),
+            pose2d.translation.y_u.inMeters()
         )
     }
 
     fun addPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         pathSeries.data(
-            pose2d.translation.x_u.inFeet(),
-            pose2d.translation.y_u.inFeet()
+            pose2d.translation.x_u.inMeters(),
+            pose2d.translation.y_u.inMeters()
         )
     }
 
@@ -79,8 +82,8 @@ object FieldChart : LineChart<Number, Number>(
         robotBoundingBoxSeries.data.clear()
         getRobotBoundingBox(pose2d).forEach {
             robotBoundingBoxSeries.data(
-                it.translation.x_u.inFeet(),
-                it.translation.y_u.inFeet()
+                it.translation.x_u.inMeters(),
+                it.translation.y_u.inMeters()
             )
         }
     }
@@ -89,8 +92,8 @@ object FieldChart : LineChart<Number, Number>(
         visionTargetSeries.data.clear()
         newVisionTargets.forEach {
             val data = XYChart.Data<Number, Number>(
-                it.translation.x_u.inFeet(),
-                it.translation.y_u.inFeet()
+                it.translation.x_u.inMeters(),
+                it.translation.y_u.inMeters()
             )
             data.node = VisionTargetNode(
                 it.rotation,
@@ -110,7 +113,7 @@ object FieldChart : LineChart<Number, Number>(
         )
 
         val mid = center.transformBy(
-            Transform2d(Properties.kRobotLength / 2.0 + 4.inch, 0.inch, Rotation2d())
+            Transform2d(Properties.kRobotLength / 2.0 + 4.inches, 0.inches, Rotation2d())
         )
 
         val bl = center.transformBy(
