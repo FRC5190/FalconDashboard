@@ -15,6 +15,9 @@ repositories {
     maven { url "https://jitpack.io" }
     maven { url "https://frcmaven.wpi.edu/artifactory/release/" }
     maven { url "https://mvnrepository.com/artifact/org.ejml/ejml-simple" }
+    maven {
+        url "https://dev.imjac.in/maven/"
+    }
 }
 
 dependencies {
@@ -53,6 +56,9 @@ dependencies {
     compile "edu.wpi.first.wpiutil:wpiutil-java:2020.2.2"
     compile group: 'org.ejml', name: 'ejml-simple', version: '0.32'
     compile "edu.wpi.first.wpilibj:wpilibj-java:2020.2.2"
+    compile(group: "com.fasterxml.jackson.core", name: "jackson-annotations", version: "2.10.0")
+    compile(group: "com.fasterxml.jackson.core", name: "jackson-core", version: "2.10.0")
+    compile(group: "com.fasterxml.jackson.core", name: "jackson-databind", version: "2.10.0")
     // NT JNI for Runtime
     runtime "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:windowsx86"
     runtime "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:windowsx86-64"
