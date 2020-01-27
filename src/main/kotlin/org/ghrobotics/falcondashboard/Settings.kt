@@ -20,6 +20,7 @@ object Settings {
     val endVelocity = SimpleDoubleProperty(0.0)
     val maxVelocity = SimpleDoubleProperty(10.0)
     val maxAcceleration = SimpleDoubleProperty(4.0)
+    val trackWidth = SimpleDoubleProperty(4.0)
     val maxCentripetalAcceleration = SimpleDoubleProperty(4.0)
     val ip = SimpleStringProperty("127.0.0.1")
 
@@ -34,6 +35,7 @@ object Settings {
             value(it.maxVelocity.value)
             value(it.maxAcceleration.value)
             value(it.maxCentripetalAcceleration.value)
+            value(it.trackWidth.value)
             value(it.ip.value)
             endArray()
         }
@@ -47,6 +49,7 @@ object Settings {
             maxVelocity.set(nextDouble())
             maxAcceleration.set(nextDouble())
             maxCentripetalAcceleration.set(nextDouble())
+            trackWidth.set(nextDouble())
             ip.set(nextString())
             endArray()
             return@read Settings

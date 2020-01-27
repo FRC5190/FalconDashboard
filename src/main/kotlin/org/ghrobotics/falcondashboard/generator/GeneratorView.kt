@@ -1,6 +1,7 @@
 package org.ghrobotics.falcondashboard.generator
 
 import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
@@ -23,6 +24,7 @@ import org.ghrobotics.falcondashboard.Settings.maxVelocity
 import org.ghrobotics.falcondashboard.Settings.name
 import org.ghrobotics.falcondashboard.Settings.reversed
 import org.ghrobotics.falcondashboard.Settings.startVelocity
+import org.ghrobotics.falcondashboard.Settings.trackWidth
 import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.generator.charts.VelocityChart
@@ -79,6 +81,7 @@ class GeneratorView : View() {
             createNumericalEntry("End Velocity (m/s)", endVelocity)
             createNumericalEntry("Max Velocity (m/s)", maxVelocity)
             createNumericalEntry("Max Acceleration (m/s/s)", maxAcceleration)
+            createNumericalEntry("Track Width (m)", trackWidth)
             createNumericalEntry("Max Centripetal Acceleration (m/s/s)", maxCentripetalAcceleration)
 
             this += WaypointsTable
@@ -131,13 +134,14 @@ class GeneratorView : View() {
     companion object {
         val waypoints = observableListOf(
             Pose2d(1.5.feet, 23.feet, Rotation2d()),
-            Pose2d(11.5.feet, 23.feet, Rotation2d())
+            Pose2d(11.5.feet, 24.feet, Rotation2d())
         )
 
         private val config: TrajectoryConfig =
             FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
                 .setStartVelocity(startVelocity.value.meters.velocity)
                 .setEndVelocity(endVelocity.value.meters.velocity)
+                .setKinematics(DifferentialDriveKinematics(trackWidth.value))
                 .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
                 .setReversed(reversed.value)
 
@@ -149,11 +153,11 @@ class GeneratorView : View() {
             reversed.onChange { update() }
             clampedCubic.onChange { update() }
             autoPathFinding.onChange { update() }
-
             startVelocity.onChange { update() }
             endVelocity.onChange { update() }
             maxVelocity.onChange { update() }
             maxAcceleration.onChange { update() }
+            trackWidth.onChange { update() }
             maxCentripetalAcceleration.onChange { update() }
         }
 
@@ -163,7 +167,8 @@ class GeneratorView : View() {
                 endVelocity.value.isNaN() ||
                 maxVelocity.value epsilonEquals 0.0 ||
                 maxAcceleration.value epsilonEquals 0.0 ||
-                maxCentripetalAcceleration.value epsilonEquals 0.0
+                maxCentripetalAcceleration.value epsilonEquals 0.0 ||
+                        trackWidth.value epsilonEquals 0.0
             ) return
 
             val wayPoints = if (autoPathFinding.value) {
@@ -184,6 +189,7 @@ class GeneratorView : View() {
             val config = FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
                 .setStartVelocity(startVelocity.value.meters.velocity)
                 .setEndVelocity(endVelocity.value.meters.velocity)
+                .setKinematics(DifferentialDriveKinematics(trackWidth.value))
                 .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
                 .setReversed(reversed.value)
 
