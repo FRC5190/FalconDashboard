@@ -5,16 +5,21 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
+import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
+import javafx.scene.text.TextAlignment
 import javafx.stage.StageStyle
+import javafx.util.StringConverter
 import kfoenix.jfxbutton
 import kfoenix.jfxcheckbox
 import kfoenix.jfxtabpane
+import kfoenix.jfxtextfield
 import org.ghrobotics.falcondashboard.Saver
 import org.ghrobotics.falcondashboard.Saver.endVelocity
+import org.ghrobotics.falcondashboard.Saver.lastSaveLoadFileProperty
 import org.ghrobotics.falcondashboard.Saver.reversed
 import org.ghrobotics.falcondashboard.Saver.startVelocity
 import org.ghrobotics.falcondashboard.Settings.clampedCubic
@@ -22,7 +27,6 @@ import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxVelocity
 import org.ghrobotics.falcondashboard.Settings.trackWidth
-import org.ghrobotics.falcondashboard.WaypointUtil
 import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.generator.charts.VelocityChart
@@ -37,6 +41,7 @@ import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.*
+import java.io.File
 
 class GeneratorView : View() {
 
@@ -45,16 +50,37 @@ class GeneratorView : View() {
         vbox {
             style {
                 paddingAll = 20.0
-                maxWidth = 300.px
+                maxWidth = 280.px
                 spacing = 5.px
             }
+            paddingAll = 5
+            prefWidth = 100.0
+            text {
+                bind(lastSaveLoadFileProperty,readonly = true, converter = object: StringConverter<File>() {
+                    override fun toString(file: File?): String {
+                        return file?.name ?: ""
+                    }
+
+                    override fun fromString(name: String?): File? = name?.let {File(name)}
+                })
+
+            }
             hbox {
+                button {
+                    paddingAll = 5
+                    text = "save"
+                    action {
+                        Saver.saveCurrentFile()
+                    }
+                    spacing = 10.0
+                }
                 button {
                     paddingAll = 5
                     text = "save as"
                     action {
                         Saver.save()
                     }
+                    spacing = 10.0
                 }
 
                 button {
@@ -63,14 +89,6 @@ class GeneratorView : View() {
                     action {
                         Saver.load()
                     }
-                }
-                button {
-                    paddingAll = 5
-                    text = "save"
-                    action {
-                        Saver.saveCurrentFile()
-                    }
-                    hiddenWhen { !Saver.hasLoaded }
                 }
             }
 
