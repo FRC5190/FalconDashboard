@@ -2,6 +2,12 @@
 Dashboard used by FRC 5190 to generate trajectories and visualize live robot motion to debug trajectory tracking and computer vision code.
 This forked version was modified for TRIGON 5990.
 
+## Changes From Original Version
+This modified version uses meters instead of feet.
+It also has a saving functunallity on a per path level.
+DiffrentialKinematicsConstraint has been added.
+Network Tables entries have been renamed to be used with TRIGON robot code table keys.
+
 ## Pre-Requisites
 JDK 11 is required to build Falcon Dashboard. Older versions will cause compilation errors.
 JDK 12 will cause a runtime error
