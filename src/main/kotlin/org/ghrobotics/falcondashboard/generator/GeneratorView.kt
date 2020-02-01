@@ -5,18 +5,15 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
-import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
-import javafx.scene.text.TextAlignment
 import javafx.stage.StageStyle
 import javafx.util.StringConverter
 import kfoenix.jfxbutton
 import kfoenix.jfxcheckbox
 import kfoenix.jfxtabpane
-import kfoenix.jfxtextfield
 import org.ghrobotics.falcondashboard.Saver
 import org.ghrobotics.falcondashboard.Saver.endVelocity
 import org.ghrobotics.falcondashboard.Saver.lastSaveLoadFileProperty
@@ -55,17 +52,20 @@ class GeneratorView : View() {
             }
             paddingAll = 5
             prefWidth = 100.0
-            text {
-                bind(lastSaveLoadFileProperty,readonly = true, converter = object: StringConverter<File>() {
-                    override fun toString(file: File?): String {
-                        return file?.name ?: ""
-                    }
+            hbox {
+                text {
+                    bind(lastSaveLoadFileProperty, readonly = true, converter = object : StringConverter<File>() {
+                        override fun toString(file: File?): String {
+                            return file?.name ?: ""
+                        }
 
-                    override fun fromString(name: String?): File? = name?.let {File(name)}
-                })
-
+                        override fun fromString(name: String?): File? = name?.let { File(name) }
+                    })
+                    alignment = Pos.BASELINE_CENTER
+                }
             }
             hbox {
+                alignment = Pos.BASELINE_CENTER
                 button {
                     paddingAll = 5
                     text = "save"
@@ -196,7 +196,7 @@ class GeneratorView : View() {
                 trackWidth.value epsilonEquals 0.0
             ) return
 
-            val wayPoints = waypoints.toList()
+            val waypoints = waypoints.toList()
 
             val config =
                 FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
@@ -207,9 +207,9 @@ class GeneratorView : View() {
                     .setReversed(reversed.value)
 
             if (clampedCubic.value) {
-                val startPose = wayPoints.first()
-                val endPose = waypoints.last()
-                val interiorWaypoints = wayPoints.subList(1, waypoints.size - 1).map { it.translation }
+                val startPose = waypoints.first()
+                val endPose = this.waypoints.last()
+                val interiorWaypoints = waypoints.subList(1, this.waypoints.size - 1).map { it.translation }
 
                 this.trajectory.set(
                     TrajectoryGenerator.generateTrajectory(
@@ -220,7 +220,7 @@ class GeneratorView : View() {
                     )
                 )
             } else {
-                this.trajectory.set(TrajectoryGenerator.generateTrajectory(wayPoints, config))
+                this.trajectory.set(TrajectoryGenerator.generateTrajectory(waypoints, config))
             }
         }
     }

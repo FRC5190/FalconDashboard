@@ -7,7 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
-import org.ghrobotics.lib.debug.FalconDashboard
+import org.ghrobotics.falcondashboard.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.networktables.FalconNetworkTable
@@ -15,7 +15,7 @@ import org.ghrobotics.lib.wrappers.networktables.FalconNetworkTable
 object Network {
 
     init {
-        FalconNetworkTable.getTable("Live_Dashboard").instance.startClient(Settings.ip.value)
+        FalconNetworkTable.getTable("SmartDashboard").instance.startClient(Settings.ip.value)
 
         var lastIsFollowingPath = false
 
