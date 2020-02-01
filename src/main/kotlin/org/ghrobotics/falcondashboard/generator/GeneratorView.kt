@@ -5,25 +5,24 @@ import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
-import edu.wpi.first.wpilibj.util.Units
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
+import javafx.util.StringConverter
 import kfoenix.jfxbutton
 import kfoenix.jfxcheckbox
 import kfoenix.jfxtabpane
-import kfoenix.jfxtextfield
-import org.ghrobotics.falcondashboard.Settings.autoPathFinding
+import org.ghrobotics.falcondashboard.Saver
+import org.ghrobotics.falcondashboard.Saver.endVelocity
+import org.ghrobotics.falcondashboard.Saver.lastSaveLoadFileProperty
+import org.ghrobotics.falcondashboard.Saver.reversed
+import org.ghrobotics.falcondashboard.Saver.startVelocity
 import org.ghrobotics.falcondashboard.Settings.clampedCubic
-import org.ghrobotics.falcondashboard.Settings.endVelocity
 import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxVelocity
-import org.ghrobotics.falcondashboard.Settings.name
-import org.ghrobotics.falcondashboard.Settings.reversed
-import org.ghrobotics.falcondashboard.Settings.startVelocity
 import org.ghrobotics.falcondashboard.Settings.trackWidth
 import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
@@ -34,13 +33,12 @@ import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable
 import org.ghrobotics.lib.mathematics.epsilonEquals
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryConfig
-import org.ghrobotics.lib.mathematics.twodim.trajectory.optimization.PathFinder
 import org.ghrobotics.lib.mathematics.units.derived.acceleration
 import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.*
+import java.io.File
 
 class GeneratorView : View() {
 
@@ -49,15 +47,48 @@ class GeneratorView : View() {
         vbox {
             style {
                 paddingAll = 20.0
-                maxWidth = 300.px
+                maxWidth = 280.px
                 spacing = 5.px
             }
-
+            paddingAll = 5
+            prefWidth = 100.0
             hbox {
-                paddingAll = 5
-                jfxtextfield {
-                    bind(name)
-                    prefWidth = 290.0
+                text {
+                    bind(lastSaveLoadFileProperty, readonly = true, converter = object : StringConverter<File>() {
+                        override fun toString(file: File?): String {
+                            return file?.name ?: ""
+                        }
+
+                        override fun fromString(name: String?): File? = name?.let { File(name) }
+                    })
+                    alignment = Pos.BASELINE_CENTER
+                }
+            }
+            hbox {
+                alignment = Pos.BASELINE_CENTER
+                button {
+                    paddingAll = 5
+                    text = "save"
+                    action {
+                        Saver.saveCurrentFile()
+                    }
+                    spacing = 10.0
+                }
+                button {
+                    paddingAll = 5
+                    text = "save as"
+                    action {
+                        Saver.save()
+                    }
+                    spacing = 10.0
+                }
+
+                button {
+                    paddingAll = 5
+                    text = "load"
+                    action {
+                        Saver.load()
+                    }
                 }
             }
 
@@ -70,11 +101,6 @@ class GeneratorView : View() {
                 paddingAll = 5
                 text = "Clamped Cubic"
                 bind(clampedCubic)
-            }
-            jfxcheckbox {
-                paddingAll = 5
-                text = "Auto Path Finding (Experimental)"
-                bind(autoPathFinding)
             }
 
             createNumericalEntry("Start Velocity (m/s)", startVelocity)
@@ -152,7 +178,6 @@ class GeneratorView : View() {
             waypoints.onChange { update() }
             reversed.onChange { update() }
             clampedCubic.onChange { update() }
-            autoPathFinding.onChange { update() }
             startVelocity.onChange { update() }
             endVelocity.onChange { update() }
             maxVelocity.onChange { update() }
@@ -168,39 +193,34 @@ class GeneratorView : View() {
                 maxVelocity.value epsilonEquals 0.0 ||
                 maxAcceleration.value epsilonEquals 0.0 ||
                 maxCentripetalAcceleration.value epsilonEquals 0.0 ||
-                        trackWidth.value epsilonEquals 0.0
+                trackWidth.value epsilonEquals 0.0
             ) return
 
-            val wayPoints = if (autoPathFinding.value) {
-                val pathFinder = PathFinder(
-                    3.5.feet,
-                    PathFinder.k2018CubesSwitch,
-                    PathFinder.k2018LeftSwitch,
-                    PathFinder.k2018Platform
+            val waypoints = waypoints.toList()
+
+            val config =
+                FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
+                    .setStartVelocity(startVelocity.value.meters.velocity)
+                    .setEndVelocity(endVelocity.value.meters.velocity)
+                    .setKinematics(DifferentialDriveKinematics(trackWidth.value))
+                    .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
+                    .setReversed(reversed.value)
+
+            if (clampedCubic.value) {
+                val startPose = waypoints.first()
+                val endPose = this.waypoints.last()
+                val interiorWaypoints = waypoints.subList(1, this.waypoints.size - 1).map { it.translation }
+
+                this.trajectory.set(
+                    TrajectoryGenerator.generateTrajectory(
+                        startPose,
+                        interiorWaypoints,
+                        endPose,
+                        config
+                    )
                 )
-                waypoints.zipWithNext { start, end ->
-                    kotlin.runCatching {
-                        pathFinder.findPath(start, end)!!
-                    }.recover { listOf(start, end) }
-                        .getOrThrow()
-                }.flatten().toSet().toList()
-            } else waypoints.toList()
-
-            val config = FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
-                .setStartVelocity(startVelocity.value.meters.velocity)
-                .setEndVelocity(endVelocity.value.meters.velocity)
-                .setKinematics(DifferentialDriveKinematics(trackWidth.value))
-                .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
-                .setReversed(reversed.value)
-
-            if(clampedCubic.value) {
-                val startPose = wayPoints.first()
-                val endPose = waypoints.last()
-                val interiorWaypoints = wayPoints.subList(1, waypoints.size - 1).map { it.translation }
-
-                this.trajectory.set(TrajectoryGenerator.generateTrajectory(startPose, interiorWaypoints, endPose, config))
             } else {
-                this.trajectory.set(TrajectoryGenerator.generateTrajectory(wayPoints, config))
+                this.trajectory.set(TrajectoryGenerator.generateTrajectory(waypoints, config))
             }
         }
     }
