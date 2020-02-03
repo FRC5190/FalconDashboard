@@ -5,7 +5,7 @@ This forked version was modified for TRIGON 5990.
 ## Changes From Original Version
 This modified version uses meters instead of feet.
 It also has a saving functionality on a per path level.
-DiffrentialKinematicsConstraint has been added.
+DifferentialKinematicsConstraint has been added.
 Network Tables entries have been renamed to be used with TRIGON robot code table keys.
 
 ## Pre-Requisites
