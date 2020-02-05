@@ -22,7 +22,7 @@ object Saver {
     var hasLoaded = SimpleBooleanProperty(false)
     private var defaultValues: String? = null
     val lastSaveLoadFileProperty = SimpleObjectProperty<File>()
-    private var lastSaveLoadFile by lastSaveLoadFileProperty
+    var lastSaveLoadFile: File? by lastSaveLoadFileProperty
 
 
     private val gson = GsonBuilder().registerTypeAdapter<Saver> {
@@ -86,11 +86,11 @@ fun save() {
         "save",
         arrayOf(FileChooser.ExtensionFilter("Falcon dashboard save file", "*.fds")),
         FileChooserMode.Save,
-        op = { initialDirectory = File(Settings.lastSaveFileLocation.value).parentFile }
+        op = { initialDirectory = File(Settings.lastLoadFileLocation.value).parentFile }
     ).firstOrNull() ?: return
     saveFile(file)
     lastSaveLoadFile = file
-    Settings.lastSaveFileLocation.set(file.absolutePath)
+    Settings.lastLoadFileLocation.set(file.absolutePath)
     hasLoaded.set(true)
 }
 
