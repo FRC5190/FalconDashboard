@@ -27,6 +27,7 @@ import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.generator.charts.VelocityChart
 import org.ghrobotics.falcondashboard.generator.fragments.CodeFragment
+import org.ghrobotics.falcondashboard.generator.fragments.KtCodeFragment
 import org.ghrobotics.falcondashboard.generator.fragments.WaypointFragment
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable
 import org.ghrobotics.lib.mathematics.epsilonEquals
@@ -99,9 +100,45 @@ class GeneratorView : View() {
                 }
                 jfxbutton {
                     prefWidth = 290.0
+                    text = "Load from text"
+                    action {
+                        object : Fragment() {
+                            override val root = vbox {
+
+                                prefWidth = 600.0
+                                prefHeight = 200.0
+
+                                val textEntryArea = textarea {
+                                    prefWidth = 290.0
+
+                                    isWrapText = true
+
+                                    text = "                        Pose2d(11.75.feet, 25.689.feet, 0.0.degrees),\n" +
+                                            "                        Pose2d(20.383.feet, 18.592.feet, (-68).degrees)"
+                                }
+                                jfxbutton {
+                                    prefWidth = 290.0
+                                    text = "Load from text"
+                                    action {
+                                        WaypointsTable.loadFromText(textEntryArea.text)
+                                    }
+                                }
+                            }
+                        }.openModal(stageStyle = StageStyle.UTILITY)
+                    }
+                }
+                jfxbutton {
+                    prefWidth = 290.0
                     text = "Generate JSON"
                     action {
                         find<CodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
+                    }
+                }
+                jfxbutton {
+                    prefWidth = 290.0
+                    text = "Generate Code"
+                    action {
+                        find<KtCodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
                     }
                 }
             }

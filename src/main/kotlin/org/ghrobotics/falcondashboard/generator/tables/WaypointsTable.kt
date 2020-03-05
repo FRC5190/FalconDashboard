@@ -12,9 +12,11 @@ import javafx.scene.input.TransferMode
 import javafx.util.converter.DoubleStringConverter
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable.setRowFactory
+import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
+import org.ghrobotics.lib.mathematics.units.derived.degrees
 import org.ghrobotics.lib.mathematics.units.feet
 import org.ghrobotics.lib.mathematics.units.inFeet
 import tornadofx.column
@@ -129,6 +131,49 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             }
             return@setRowFactory row
         }
+    }
+
+    fun loadFromText(text: String) {
+        val lines = text.lines()
+
+        val poses = lines.map {
+            var trim = it
+                .replace(" ", "")
+                .let { it2 -> if(it2.last() == ',') it2.substring(0, it2.length - 1) else it2 }
+                .let { it2 -> if(!it2.startsWith("Pose2d", true)) return else it2 }
+
+            // so at this point all of our text starts with Pose2d and ends with a closing paren.
+            // start by removing the starting and closing parenthesis
+
+            trim = trim.substring(7, trim.length- 1)
+            val x = trim.substring(0, trim.indexOf(".feet"))
+                .let { it2 ->
+                    if(it2.startsWith("(") || it2.endsWith(")")) {
+                        return@let it2.substring(1, it2.length - 1)
+                    } else it2
+                }
+                .toDouble()
+            val trimNoX = trim.substring(trim.indexOf(".feet") + 6, trim.length)
+            val y = trimNoX.substring(0, trimNoX.indexOf(".feet"))
+                .let { it2 ->
+                    if(it2.startsWith("(") || it2.endsWith(")")) {
+                        return@let it2.substring(1, it2.length - 1)
+                    } else it2
+                }
+                .toDouble()
+            val trimNoY = trimNoX.substring(trimNoX.indexOf(".feet") + 6, trimNoX.length)
+            val theta: Double = trimNoY.let { noY ->
+                val index: Int = noY.indexOf(".degrees")
+                val numberWithMaybeParens = noY.substring(0, index)
+                if(numberWithMaybeParens.startsWith("(") || numberWithMaybeParens.endsWith(")")) {
+                    return@let numberWithMaybeParens.substring(1, numberWithMaybeParens.length - 1).toDouble()
+                }
+                return@let numberWithMaybeParens.toDouble()
+            }
+            val pose = Pose2d(x.feet, y.feet, theta.degrees)
+            pose
+        }
+        GeneratorView.waypoints.setAll(poses)
     }
 
     fun removeSelectedItemIfPossible() {
