@@ -146,9 +146,21 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             // start by removing the starting and closing parenthesis
 
             trim = trim.substring(7, trim.length- 1)
-            val x = trim.substring(0, trim.indexOf(".feet")).toDouble()
+            val x = trim.substring(0, trim.indexOf(".feet"))
+                .let { it2 ->
+                    if(it2.startsWith("(") || it2.endsWith(")")) {
+                        return@let it2.substring(1, it2.length - 1)
+                    } else it2
+                }
+                .toDouble()
             val trimNoX = trim.substring(trim.indexOf(".feet") + 6, trim.length)
-            val y = trimNoX.substring(0, trimNoX.indexOf(".feet")).toDouble()
+            val y = trimNoX.substring(0, trimNoX.indexOf(".feet"))
+                .let { it2 ->
+                    if(it2.startsWith("(") || it2.endsWith(")")) {
+                        return@let it2.substring(1, it2.length - 1)
+                    } else it2
+                }
+                .toDouble()
             val trimNoY = trimNoX.substring(trimNoX.indexOf(".feet") + 6, trimNoX.length)
             val theta: Double = trimNoY.let { noY ->
                 val index: Int = noY.indexOf(".degrees")
