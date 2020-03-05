@@ -140,7 +140,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             var trim = it
                 .replace(" ", "")
                 .let { it2 -> if(it2.last() == ',') it2.substring(0, it2.length - 1) else it2 }
-                .let { it2 -> if(!it2.startsWith("Pose2d", true)) return else it2 }
+                .let { it2 -> if(!it2.startsWith("Pose2d", true)) "" else it2 }
 
             // so at this point all of our text starts with Pose2d and ends with a closing paren.
             // start by removing the starting and closing parenthesis
