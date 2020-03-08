@@ -137,6 +137,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
         val lines = text.lines()
 
         val poses: List<Pose2d?> = lines.map {
+            if(it.isEmpty()) return@map null
             var trim = it
                 .replace(" ", "")
                 .let { it2 -> if(it2.last() == ',') it2.substring(0, it2.length - 1) else it2 }
