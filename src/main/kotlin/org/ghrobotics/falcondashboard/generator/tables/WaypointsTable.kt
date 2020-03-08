@@ -136,11 +136,11 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
     fun loadFromText(text: String) {
         val lines = text.lines()
 
-        val poses = lines.map {
+        val poses: List<Pose2d?> = lines.map {
             var trim = it
                 .replace(" ", "")
                 .let { it2 -> if(it2.last() == ',') it2.substring(0, it2.length - 1) else it2 }
-                .let { it2 -> if(!it2.startsWith("Pose2d", true)) "" else it2 }
+                .let { it2 -> if(!it2.startsWith("Pose2d", true)) null else it2 } ?: return@map null
 
             // so at this point all of our text starts with Pose2d and ends with a closing paren.
             // start by removing the starting and closing parenthesis
@@ -163,7 +163,9 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
                 .toDouble()
             val trimNoY = trimNoX.substring(trimNoX.indexOf(".feet") + 6, trimNoX.length)
             val theta: Double = trimNoY.let { noY ->
-                val index: Int = noY.indexOf(".degrees")
+                val index: Int = noY.indexOf(".degrees").let { ret ->
+                    if(ret < 0) noY.indexOf(".degree") else ret
+                }
                 val numberWithMaybeParens = noY.substring(0, index)
                 if(numberWithMaybeParens.startsWith("(") || numberWithMaybeParens.endsWith(")")) {
                     return@let numberWithMaybeParens.substring(1, numberWithMaybeParens.length - 1).toDouble()
@@ -173,7 +175,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             val pose = Pose2d(x.feet, y.feet, theta.degrees)
             pose
         }
-        GeneratorView.waypoints.setAll(poses)
+        GeneratorView.waypoints.setAll(poses.filterNotNull())
     }
 
     fun removeSelectedItemIfPossible() {

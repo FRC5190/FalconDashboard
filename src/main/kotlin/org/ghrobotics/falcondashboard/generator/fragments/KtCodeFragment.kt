@@ -56,7 +56,7 @@ class KtCodeFragment : Fragment() {
                     append(
                         "    Pose2d(${dm.format(it.translation.x_u.inFeet())}.feet, " +
                                 "${dm.format(it.translation.y_u.inFeet())}.feet, " +
-                                "${dm.format(it.rotation.degrees)}.degree)"
+                                "${dm.format(it.rotation.degrees)}.degrees)"
                     )
                     if (it != GeneratorView.waypoints.last()) append(",")
                     append("\n")
