@@ -8,7 +8,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.mapprop
-import org.ghrobotics.lib.mathematics.units.inFeet
+import org.ghrobotics.lib.mathematics.units.inMeters
 import tornadofx.*
 
 open class RobotNode(
@@ -38,9 +38,9 @@ open class RobotNode(
             usePrefHeight = true
             usePrefWidth = true
             prefHeightProperty()
-                .bind(scaleProperty.multiply(Properties.kRobotWidth.inFeet()))
+                .bind(scaleProperty.multiply(Properties.kRobotWidth.inMeters()))
             prefWidthProperty()
-                .bind(scaleProperty.multiply(Properties.kRobotLength.inFeet()))
+                .bind(scaleProperty.multiply(Properties.kRobotLength.inMeters()))
         }
     }
 

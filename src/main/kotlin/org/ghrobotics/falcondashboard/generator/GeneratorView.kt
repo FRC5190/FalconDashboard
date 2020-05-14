@@ -36,7 +36,7 @@ import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryConfig
 import org.ghrobotics.lib.mathematics.twodim.trajectory.optimization.PathFinder
 import org.ghrobotics.lib.mathematics.units.derived.acceleration
 import org.ghrobotics.lib.mathematics.units.derived.velocity
-import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.*
 
 class GeneratorView : View() {
@@ -74,11 +74,11 @@ class GeneratorView : View() {
                 bind(autoPathFinding)
             }
 
-            createNumericalEntry("Start Velocity (f/s)", startVelocity)
-            createNumericalEntry("End Velocity (f/s)", endVelocity)
-            createNumericalEntry("Max Velocity (f/s)", maxVelocity)
-            createNumericalEntry("Max Acceleration (f/s/s)", maxAcceleration)
-            createNumericalEntry("Max Centripetal Acceleration (f/s/s)", maxCentripetalAcceleration)
+            createNumericalEntry("Start Velocity (m/s)", startVelocity)
+            createNumericalEntry("End Velocity (m/s)", endVelocity)
+            createNumericalEntry("Max Velocity (m/s)", maxVelocity)
+            createNumericalEntry("Max Acceleration (m/s/s)", maxAcceleration)
+            createNumericalEntry("Max Centripetal Acceleration (m/s/s)", maxCentripetalAcceleration)
 
             this += WaypointsTable
 
@@ -113,8 +113,8 @@ class GeneratorView : View() {
 
                                     isWrapText = true
 
-                                    text = "                        Pose2d(11.75.feet, 25.689.feet, 0.0.degrees),\n" +
-                                            "                        Pose2d(20.383.feet, 18.592.feet, (-68).degrees)"
+                                    text = "                        Pose2d(11.75.meters, 25.689.meters, 0.0.degrees),\n" +
+                                            "                        Pose2d(20.383.meters, 18.592.meters, (-68).degrees)"
                                 }
                                 jfxbutton {
                                     prefWidth = 290.0
@@ -165,15 +165,15 @@ class GeneratorView : View() {
 
     companion object {
         val waypoints = observableListOf(
-            Pose2d(1.5.feet, 23.feet, Rotation2d()),
-            Pose2d(11.5.feet, 23.feet, Rotation2d())
+            Pose2d(3.meters, 6.meters, Rotation2d()),
+            Pose2d(5.meters, 7.5.meters, Rotation2d())
         )
 
         private val config: TrajectoryConfig =
-            FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
-                .setStartVelocity(startVelocity.value.feet.velocity)
-                .setEndVelocity(endVelocity.value.feet.velocity)
-                .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
+            FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
+                .setStartVelocity(startVelocity.value.meters.velocity)
+                .setEndVelocity(endVelocity.value.meters.velocity)
+                .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
                 .setReversed(reversed.value)
 
         val trajectory = SimpleObjectProperty(TrajectoryGenerator.generateTrajectory(waypoints, config))
@@ -203,7 +203,7 @@ class GeneratorView : View() {
 
             val wayPoints = if (autoPathFinding.value) {
                 val pathFinder = PathFinder(
-                    3.5.feet,
+                    3.5.meters,
                     PathFinder.k2018CubesSwitch,
                     PathFinder.k2018LeftSwitch,
                     PathFinder.k2018Platform
@@ -216,10 +216,10 @@ class GeneratorView : View() {
                 }.flatten().toSet().toList()
             } else waypoints.toList()
 
-            val config = FalconTrajectoryConfig(maxVelocity.value.feet.velocity, maxAcceleration.value.feet.acceleration)
-                .setStartVelocity(startVelocity.value.feet.velocity)
-                .setEndVelocity(endVelocity.value.feet.velocity)
-                .addConstraint(CentripetalAccelerationConstraint(Units.feetToMeters(maxCentripetalAcceleration.value)))
+            val config = FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
+                .setStartVelocity(startVelocity.value.meters.velocity)
+                .setEndVelocity(endVelocity.value.meters.velocity)
+                .addConstraint(CentripetalAccelerationConstraint(maxCentripetalAcceleration.value))
                 .setReversed(reversed.value)
 
             if(clampedCubic.value) {

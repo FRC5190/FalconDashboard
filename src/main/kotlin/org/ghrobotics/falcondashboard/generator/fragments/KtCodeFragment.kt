@@ -7,8 +7,8 @@ import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
-import org.ghrobotics.lib.mathematics.units.feet
-import org.ghrobotics.lib.mathematics.units.inFeet
+import org.ghrobotics.lib.mathematics.units.meters
+import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.mathematics.units.meter
 import tornadofx.*
 import java.awt.Desktop
@@ -42,7 +42,7 @@ class KtCodeFragment : Fragment() {
 //                            "import org.ghrobotics.lib.mathematics.units.degree\n" +
 //                            "import org.ghrobotics.lib.mathematics.units.derivedunits.acceleration\n" +
 //                            "import org.ghrobotics.lib.mathematics.units.derivedunits.velocity\n" +
-//                            "import org.ghrobotics.lib.mathematics.units.feet\n\n\n\n"
+//                            "import org.ghrobotics.lib.mathematics.units.meters\n\n\n\n"
 //                )
 
                 val name = Settings.name.value.decapitalize()
@@ -51,23 +51,23 @@ class KtCodeFragment : Fragment() {
                 val dm = DecimalFormat("##.###")
 
 //                append("val $name = DefaultTrajectoryGenerator.generateTrajectory(\n")
-                append("wayPoints = listOf(\n")
+                append("wayPoints = listOf(//values are in meters and degrees\n")
                 GeneratorView.waypoints.forEach {
                     append(
-                        "    Pose2d(${dm.format(it.translation.x_u.inFeet())}.feet, " +
-                                "${dm.format(it.translation.y_u.inFeet())}.feet, " +
-                                "${dm.format(it.rotation.degrees)}.degrees)"
+                        "    Pose2d(${dm.format(it.translation.x_u.inMeters())}, " +
+                                "${dm.format(it.translation.y_u.inMeters())}, " +
+                                "${dm.format(it.rotation.degrees)})"
                     )
                     if (it != GeneratorView.waypoints.last()) append(",")
                     append("\n")
                 }
                 append("),\n")
 //                append(
-//                    "    constraints = listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.feet.acceleration),\n" +
-//                            "    startVelocity = 0.0.feet.velocity,\n" +
-//                            "    endVelocity = 0.0.feet.velocity,\n" +
-//                            "    maxVelocity = ${Settings.maxVelocity.value}.feet.velocity,\n" +
-//                            "    maxAcceleration = ${Settings.maxAcceleration.value}.feet.acceleration,\n" +
+//                    "    constraints = listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.meters.acceleration),\n" +
+//                            "    startVelocity = 0.0.meters.velocity,\n" +
+//                            "    endVelocity = 0.0.meters.velocity,\n" +
+//                            "    maxVelocity = ${Settings.maxVelocity.value}.meters.velocity,\n" +
+//                            "    maxAcceleration = ${Settings.maxAcceleration.value}.meters.acceleration,\n" +
 //                            "    reversed = ${Settings.reversed.value}\n)"
 //                )
             }

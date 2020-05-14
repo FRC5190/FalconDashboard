@@ -11,7 +11,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.mapprop
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
-import org.ghrobotics.lib.mathematics.units.feet
+import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.box
 import tornadofx.em
 import tornadofx.multi
@@ -64,8 +64,8 @@ class PositionNode(
                 dragging = false
                 simpleObjectProperty.value = Pose2d(
                     Translation2d(
-                        data.xValue.feet,
-                        data.yValue.feet
+                        data.xValue.meters,
+                        data.yValue.meters
                     ),
                     simpleObjectProperty.value.rotation
                 )

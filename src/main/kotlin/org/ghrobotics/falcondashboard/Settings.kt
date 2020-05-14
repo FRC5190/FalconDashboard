@@ -18,9 +18,9 @@ object Settings {
     val autoPathFinding = SimpleBooleanProperty(false)
     val startVelocity = SimpleDoubleProperty(0.0)
     val endVelocity = SimpleDoubleProperty(0.0)
-    val maxVelocity = SimpleDoubleProperty(10.0)
-    val maxAcceleration = SimpleDoubleProperty(4.0)
-    val maxCentripetalAcceleration = SimpleDoubleProperty(4.0)
+    val maxVelocity = SimpleDoubleProperty(3.0)
+    val maxAcceleration = SimpleDoubleProperty(2.0)
+    val maxCentripetalAcceleration = SimpleDoubleProperty(2.0)
     val ip = SimpleStringProperty("127.0.1.1")
 
     private val gson = GsonBuilder().registerTypeAdapter<Settings> {
