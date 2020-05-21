@@ -125,5 +125,5 @@ object PositionChart : LineChart<Number, Number>(
         }
     }
 
-    override fun resize(width: Double, height: Double) = super.resize(height / 27*54, height)
+    override fun resize(width: Double, height: Double) = super.resize(1200.0, 600.0)
 }

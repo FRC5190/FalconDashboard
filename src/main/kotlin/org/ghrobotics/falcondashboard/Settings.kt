@@ -18,8 +18,8 @@ object Settings {
     val autoPathFinding = SimpleBooleanProperty(false)
     val startVelocity = SimpleDoubleProperty(0.0)
     val endVelocity = SimpleDoubleProperty(0.0)
-    val maxVelocity = SimpleDoubleProperty(3.0)
-    val maxAcceleration = SimpleDoubleProperty(2.0)
+    val maxVelocity = SimpleDoubleProperty(2.0)
+    val maxAcceleration = SimpleDoubleProperty(1.5)
     val maxCentripetalAcceleration = SimpleDoubleProperty(2.0)
     val ip = SimpleStringProperty("127.0.1.1")
 
