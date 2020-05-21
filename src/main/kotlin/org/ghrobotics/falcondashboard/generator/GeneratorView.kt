@@ -4,16 +4,12 @@ import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
-import edu.wpi.first.wpilibj.util.Units
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
-import kfoenix.jfxbutton
-import kfoenix.jfxcheckbox
-import kfoenix.jfxtabpane
-import kfoenix.jfxtextfield
+import kfoenix.*
 import org.ghrobotics.falcondashboard.Settings.autoPathFinding
 import org.ghrobotics.falcondashboard.Settings.clampedCubic
 import org.ghrobotics.falcondashboard.Settings.endVelocity
@@ -23,6 +19,7 @@ import org.ghrobotics.falcondashboard.Settings.maxVelocity
 import org.ghrobotics.falcondashboard.Settings.name
 import org.ghrobotics.falcondashboard.Settings.reversed
 import org.ghrobotics.falcondashboard.Settings.startVelocity
+import org.ghrobotics.falcondashboard.Settings.trajectoryTime
 import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.generator.charts.VelocityChart
@@ -38,6 +35,8 @@ import org.ghrobotics.lib.mathematics.units.derived.acceleration
 import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.*
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 class GeneratorView : View() {
 
@@ -73,6 +72,18 @@ class GeneratorView : View() {
                 text = "Auto Path Finding (Experimental)"
                 bind(autoPathFinding)
             }
+            /*
+            jfxtextfield{
+                promptText = "Trajectory Time:   "
+                bind(trajectoryTime)
+            }
+            */
+            text("Network Table IP:   ") {
+                alignment = Pos.CENTER_LEFT
+                // val str = "Trajectory Time:" + trajectoryTime
+                bind(trajectoryTime)
+            }
+
 
             createNumericalEntry("Start Velocity (m/s)", startVelocity)
             createNumericalEntry("End Velocity (m/s)", endVelocity)
@@ -231,6 +242,8 @@ class GeneratorView : View() {
             } else {
                 this.trajectory.set(TrajectoryGenerator.generateTrajectory(wayPoints, config))
             }
+            val time = BigDecimal(this.trajectory.get().totalTimeSeconds).setScale(2, RoundingMode.HALF_EVEN)
+            trajectoryTime.set("Trajectory Time (s): " + time)
         }
     }
 }
