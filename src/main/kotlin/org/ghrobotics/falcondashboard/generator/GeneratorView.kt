@@ -72,15 +72,8 @@ class GeneratorView : View() {
                 text = "Auto Path Finding (Experimental)"
                 bind(autoPathFinding)
             }
-            /*
-            jfxtextfield{
-                promptText = "Trajectory Time:   "
-                bind(trajectoryTime)
-            }
-            */
             text("Network Table IP:   ") {
                 alignment = Pos.CENTER_LEFT
-                // val str = "Trajectory Time:" + trajectoryTime
                 bind(trajectoryTime)
             }
 
