@@ -1,7 +1,9 @@
 package org.ghrobotics.falcondashboard
 
 import org.ghrobotics.lib.mathematics.units.derived.degrees
+import org.ghrobotics.lib.mathematics.units.derived.radians
 import org.ghrobotics.lib.mathematics.units.meters
+import java.lang.Math
 
 /**
  * Stores general properties for robots and vision targets.
@@ -18,8 +20,8 @@ object Properties {
     val kTurretSize = 0.2.meters
 
     // Camera Specs
-    val kCameraFOV = 60.degrees
-    val kCameraSight = 3.meters
+    val kCameraFOV = Math.toRadians(40.0).radians
+    val kCameraSight = 6.meters
 
     // Target Sizes
     val kTargetWidth = 0.36.meters
