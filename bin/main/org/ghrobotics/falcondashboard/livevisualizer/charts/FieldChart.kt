@@ -7,6 +7,7 @@ import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.Properties
+import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.lib.mathematics.twodim.geometry.Transform2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
@@ -102,23 +103,25 @@ object FieldChart : LineChart<Number, Number>(
 
     private fun getRobotBoundingBox(center: Pose2d): Array<Pose2d> {
         val tl = center.transformBy(
-            Transform2d(-Properties.kRobotLength / 2, Properties.kRobotWidth / 2, Rotation2d())
+            Transform2d(-Settings.robotLength.value.meters / 2, Settings.robotWidth.value.meters / 2, Rotation2d())
         )
 
         val tr = center.transformBy(
-            Transform2d(Properties.kRobotLength / 2, Properties.kRobotWidth / 2, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2, Settings.robotLength.value.meters / 2, Rotation2d())
         )
 
+        // TODO: Try to understand weird 0.106 meters here
         val mid = center.transformBy(
-            Transform2d(Properties.kRobotLength / 2.0 + 0.106.meters, 0.meters, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2.0 + 0.meters, 0.meters, Rotation2d())
+            //Transform2d(Settings.robotLength.value.meters / 2.0 + 0.106.meters, 0.meters, Rotation2d())
         )
 
         val bl = center.transformBy(
-            Transform2d(-Properties.kRobotLength / 2, -Properties.kRobotWidth / 2, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotLength.value.meters / 2, Rotation2d())
         )
 
         val br = center.transformBy(
-            Transform2d(Properties.kRobotLength / 2, -Properties.kRobotWidth / 2, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotLength.value.meters / 2, Rotation2d())
         )
 
         return arrayOf(tl, tr, mid, br, bl, tl)

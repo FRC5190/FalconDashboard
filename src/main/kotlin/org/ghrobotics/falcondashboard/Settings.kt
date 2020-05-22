@@ -16,6 +16,8 @@ object Settings {
     val reversed = SimpleBooleanProperty(false)
     val clampedCubic = SimpleBooleanProperty(true)
     val autoPathFinding = SimpleBooleanProperty(false)
+    val robotWidth = SimpleDoubleProperty(Properties.kRobotWidth.value)
+    val robotLength = SimpleDoubleProperty(Properties.kRobotLength.value)
     val startVelocity = SimpleDoubleProperty(0.0)
     val endVelocity = SimpleDoubleProperty(0.0)
     val maxVelocity = SimpleDoubleProperty(2.0)

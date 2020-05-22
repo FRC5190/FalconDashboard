@@ -8,6 +8,8 @@ import javafx.scene.control.Tooltip
 import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
+import org.ghrobotics.falcondashboard.Properties
+import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart.setOnMouseClicked
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
@@ -30,7 +32,11 @@ object PositionChart : LineChart<Number, Number>(
 ) {
     // Series
     private val seriesXY = Series<Number, Number>()
-    private val seriesWayPoints = Series<Number, Number>()
+    public val seriesWayPoints = Series<Number, Number>()
+
+    fun euclideanDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+        return Math.sqrt(Math.pow(x1-x2,2.0) + Math.pow(y1-y2,2.0))
+    }
 
     init {
         // Set styles
@@ -56,10 +62,42 @@ object PositionChart : LineChart<Number, Number>(
         // Add waypoint on double click
         setOnMouseClicked {
             if (it.button == MouseButton.PRIMARY) {
-                if (it.clickCount == 2) {
+                // Double click to add waypoint
+                if (it.clickCount == 2)
+                {
                     val plotX = xAxis.getValueForDisplay(xAxis.sceneToLocal(it.sceneX, it.sceneY).x)
                     val plotY = yAxis.getValueForDisplay(yAxis.sceneToLocal(it.sceneX, it.sceneY).y)
                     GeneratorView.waypoints.add(Pose2d(plotX.meters, plotY.meters, Rotation2d()))
+                }
+                // Control + click to delete waypoint
+                else if (it.isControlDown)
+                {
+                    val x1 = xAxis.getValueForDisplay(xAxis.sceneToLocal(it.sceneX, it.sceneY).x).toDouble()
+                    val y1 = yAxis.getValueForDisplay(yAxis.sceneToLocal(it.sceneX, it.sceneY).y).toDouble()
+                    println("Control down ")
+                    // Find the closest waypoint
+                    val distances: ArrayList<Double> = ArrayList()
+                    for (idx in 0 until GeneratorView.waypoints.size)
+                    {
+                        val x2 = GeneratorView.waypoints.get(idx).translation.x
+                        val y2 = GeneratorView.waypoints.get(idx).translation.y
+                        val dist = euclideanDistance(x1, y1, x2, y2)
+                        distances.add(dist)
+                    }
+                    // Find the min (closest) index and it's distance
+                    val minDistance = distances.min()!!
+                    val minIdx = distances.indexOf(minDistance)
+                    // Get robot size from properties
+                    val robotSize = Math.sqrt(Math.pow(Settings.robotLength.value,2.0)
+                            + Math.pow(Settings.robotWidth.value,2.0))
+                    // If the clicked point is inside the robot and there are more than 2 waypoints
+                    // get ready to remove waypoints
+                    // TODO: Make this check with polygon intersection with actual robot rectangle
+                    if (minDistance < robotSize && distances.size > 2)
+                    {
+                        // Remove the waypoint
+                        GeneratorView.waypoints.remove(minIdx, minIdx+1)
+                    }
                 }
             }
         }
@@ -95,7 +133,7 @@ object PositionChart : LineChart<Number, Number>(
     /**
      * Updates the trajectory on the field.
      */
-    private fun updateSeriesXY() {
+    public fun updateSeriesXY() {
         seriesXY.data.clear()
 
         val duration = GeneratorView.trajectory.value.totalTimeSeconds

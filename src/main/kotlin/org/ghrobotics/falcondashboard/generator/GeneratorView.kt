@@ -3,6 +3,7 @@ package org.ghrobotics.falcondashboard.generator
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
+import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
@@ -16,17 +17,18 @@ import org.ghrobotics.falcondashboard.Settings.endVelocity
 import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxVelocity
-import org.ghrobotics.falcondashboard.Settings.name
 import org.ghrobotics.falcondashboard.Settings.reversed
 import org.ghrobotics.falcondashboard.Settings.startVelocity
 import org.ghrobotics.falcondashboard.Settings.trajectoryTime
+import org.ghrobotics.falcondashboard.Settings.robotLength
+import org.ghrobotics.falcondashboard.Settings.robotWidth
 import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.generator.charts.VelocityChart
-import org.ghrobotics.falcondashboard.generator.fragments.CodeFragment
 import org.ghrobotics.falcondashboard.generator.fragments.KtCodeFragment
 import org.ghrobotics.falcondashboard.generator.fragments.WaypointFragment
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable
+import org.ghrobotics.falcondashboard.saveToJSON
 import org.ghrobotics.lib.mathematics.epsilonEquals
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryConfig
@@ -49,13 +51,17 @@ class GeneratorView : View() {
                 spacing = 5.px
             }
 
+            /*
             hbox {
+
                 paddingAll = 5
                 jfxtextfield {
                     bind(name)
                     prefWidth = 290.0
                 }
+
             }
+            */
 
             jfxcheckbox {
                 paddingAll = 5
@@ -67,19 +73,23 @@ class GeneratorView : View() {
                 text = "Clamped Cubic"
                 bind(clampedCubic)
             }
+            /*
             jfxcheckbox {
                 paddingAll = 5
                 text = "Auto Path Finding (Experimental)"
                 bind(autoPathFinding)
             }
-            text("Network Table IP:   ") {
+            */
+            text("Trajectory Time (s): ") {
                 alignment = Pos.CENTER_LEFT
                 bind(trajectoryTime)
             }
 
-
-            createNumericalEntry("Start Velocity (m/s)", startVelocity)
-            createNumericalEntry("End Velocity (m/s)", endVelocity)
+            createNumericalEntry("Robot Width (m)", robotWidth)
+            createNumericalEntry("Robot Length (m)", robotLength)
+            // Removing these two for now
+            // createNumericalEntry("Start Velocity (m/s)", startVelocity)
+            // createNumericalEntry("End Velocity (m/s)", endVelocity)
             createNumericalEntry("Max Velocity (m/s)", maxVelocity)
             createNumericalEntry("Max Acceleration (m/s/s)", maxAcceleration)
             createNumericalEntry("Max Centripetal Acceleration (m/s/s)", maxCentripetalAcceleration)
@@ -102,6 +112,21 @@ class GeneratorView : View() {
                         WaypointsTable.removeSelectedItemIfPossible()
                     }
                 }
+                jfxbutton {
+                    prefWidth = 290.0
+                    text = "Save to file"
+                    action {
+                        WaypointsTable.saveToFile()
+                    }
+                }
+                jfxbutton {
+                    prefWidth = 290.0
+                    text = "Load from file"
+                    action {
+                        WaypointsTable.loadFromFile()
+                    }
+                }
+                /*
                 jfxbutton {
                     prefWidth = 290.0
                     text = "Load from text"
@@ -136,6 +161,17 @@ class GeneratorView : View() {
                     text = "Generate JSON"
                     action {
                         find<CodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
+
+                    }
+                }
+                */
+                jfxbutton {
+                    prefWidth = 290.0
+                    text = "Save To JSON"
+                    action {
+                        // find<CodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
+                        val txt = TrajectoryUtil.serializeTrajectory(GeneratorView.trajectory.value)
+                        saveToJSON(txt)
                     }
                 }
                 jfxbutton {
@@ -189,6 +225,8 @@ class GeneratorView : View() {
             clampedCubic.onChange { update() }
             autoPathFinding.onChange { update() }
 
+            robotLength.onChange { update() }
+            robotWidth.onChange { update() }
             startVelocity.onChange { update() }
             endVelocity.onChange { update() }
             maxVelocity.onChange { update() }
@@ -198,7 +236,9 @@ class GeneratorView : View() {
 
         @Synchronized
         private fun update() {
-            if (startVelocity.value.isNaN() ||
+            if (robotLength.value.isNaN() ||
+                robotWidth.value.isNaN() ||
+                startVelocity.value.isNaN() ||
                 endVelocity.value.isNaN() ||
                 maxVelocity.value epsilonEquals 0.0 ||
                 maxAcceleration.value epsilonEquals 0.0 ||
@@ -235,8 +275,10 @@ class GeneratorView : View() {
             } else {
                 this.trajectory.set(TrajectoryGenerator.generateTrajectory(wayPoints, config))
             }
+            // Update trajectory time
             val time = BigDecimal(this.trajectory.get().totalTimeSeconds).setScale(2, RoundingMode.HALF_EVEN)
             trajectoryTime.set("Trajectory Time (s): " + time)
+            // TODO: Change robot width and height here
         }
     }
 }

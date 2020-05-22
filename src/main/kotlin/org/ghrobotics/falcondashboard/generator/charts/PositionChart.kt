@@ -9,6 +9,7 @@ import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
 import org.ghrobotics.falcondashboard.Properties
+import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart.setOnMouseClicked
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
@@ -31,7 +32,7 @@ object PositionChart : LineChart<Number, Number>(
 ) {
     // Series
     private val seriesXY = Series<Number, Number>()
-    private val seriesWayPoints = Series<Number, Number>()
+    public val seriesWayPoints = Series<Number, Number>()
 
     fun euclideanDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
         return Math.sqrt(Math.pow(x1-x2,2.0) + Math.pow(y1-y2,2.0))
@@ -86,11 +87,9 @@ object PositionChart : LineChart<Number, Number>(
                     // Find the min (closest) index and it's distance
                     val minDistance = distances.min()!!
                     val minIdx = distances.indexOf(minDistance)
-                    print("Min of list: ")
-                    println(minDistance)
                     // Get robot size from properties
-                    val robotSize = Math.sqrt(Math.pow(Properties.kRobotLength.value,2.0)
-                            + Math.pow(Properties.kRobotWidth.value,2.0))
+                    val robotSize = Math.sqrt(Math.pow(Settings.robotLength.value,2.0)
+                            + Math.pow(Settings.robotWidth.value,2.0))
                     // If the clicked point is inside the robot and there are more than 2 waypoints
                     // get ready to remove waypoints
                     // TODO: Make this check with polygon intersection with actual robot rectangle
@@ -134,7 +133,7 @@ object PositionChart : LineChart<Number, Number>(
     /**
      * Updates the trajectory on the field.
      */
-    private fun updateSeriesXY() {
+    public fun updateSeriesXY() {
         seriesXY.data.clear()
 
         val duration = GeneratorView.trajectory.value.totalTimeSeconds

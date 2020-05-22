@@ -9,6 +9,8 @@ import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.ClipboardContent
 import javafx.scene.input.DataFormat
 import javafx.scene.input.TransferMode
+import javafx.stage.FileChooser
+import javafx.stage.Stage
 import javafx.util.converter.DoubleStringConverter
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable.setRowFactory
@@ -17,10 +19,13 @@ import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
 import org.ghrobotics.lib.mathematics.units.derived.degrees
-import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.inMeters
+import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.column
+import java.io.File
+import java.io.IOException
 import kotlin.math.round
+
 
 object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
 
@@ -131,6 +136,80 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
             }
             return@setRowFactory row
         }
+    }
+
+
+    fun saveToFile()
+    {
+        try
+        {
+            val dir = File("Paths/")
+            dir.mkdirs()
+            // Create file chooser
+            val fileChooser = FileChooser()
+            fileChooser.setInitialDirectory(dir)
+            fileChooser.title = "Save File" //set the title of the Dialog window
+            val defaultSaveName = "path.txt"
+            fileChooser.initialFileName = defaultSaveName //set the default name for file to be saved
+            //create extension filters. The choice will be appended to the end of the file name
+            fileChooser.extensionFilters.addAll(
+                FileChooser.ExtensionFilter("Text Files", "*.txt")
+            )
+            // Open window
+            val stg = Stage()
+            // Get filename
+            val file = fileChooser.showSaveDialog(stg)
+            // Close the window
+            stg.close()
+            file.printWriter().use { out ->
+                out.println("X (m),Y (m),Angle (deg)")
+                for (idx in 0 until GeneratorView.waypoints.size)
+                {
+                    var x = GeneratorView.waypoints.get(idx).translation.x.toString()
+                    var y = GeneratorView.waypoints.get(idx).translation.y.toString()
+                    var angle = GeneratorView.waypoints.get(idx).rotation.degrees.toString()
+                    var writeStr = x + "," + y + "," + angle
+                    out.println(writeStr)
+                }
+            }
+        }
+        catch (e: IOException) {
+            print(e)
+        }
+    }
+
+    fun loadFromFile()
+    {
+        val dir = File("Paths/")
+        dir.mkdirs()
+        // Create poses
+        val poses= mutableListOf<Pose2d?>()
+        // Create FileChooser
+        val fileChooser = FileChooser()
+        fileChooser.setInitialDirectory(dir)
+        fileChooser.title = "Load File" //set the title of the Dialog window
+        //create extension filters. The choice will be appended to the end of the file name
+        fileChooser.extensionFilters.addAll(
+            FileChooser.ExtensionFilter("Text Files", "*.txt")
+        )
+        // Open window
+        val stg = Stage()
+        // Get the file
+        val file = fileChooser.showOpenDialog(stg)
+        // Close the window
+        stg.close()
+        val lines = file.readLines()
+        // Loop over the file ignoring the first line (head)
+        for (idx in 1 until lines.size)
+        {
+            val line = lines.get(idx)
+            val words = line.split(",")
+            val pose = Pose2d(words[0].toDouble().meters, words[1].toDouble().meters)
+            poses.add(pose)
+        }
+        // Set Waypoints
+        GeneratorView.waypoints.setAll(poses)
+
     }
 
     fun loadFromText(text: String) {

@@ -2,15 +2,17 @@ package org.ghrobotics.falcondashboard
 
 import javafx.application.Platform
 import javafx.beans.property.DoublePropertyBase
-import javafx.beans.property.Property
 import javafx.beans.property.ReadOnlyObjectPropertyBase
 import javafx.beans.property.ReadOnlyProperty
-import javafx.collections.ObservableList
 import javafx.geometry.Pos
 import javafx.scene.Parent
+import javafx.stage.FileChooser
+import javafx.stage.Stage
 import javafx.util.converter.NumberStringConverter
 import kfoenix.jfxtextfield
 import tornadofx.*
+import java.io.File
+
 
 fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hbox {
     paddingAll = 5
@@ -24,6 +26,31 @@ fun Parent.createNumericalEntry(name: String, property: DoublePropertyBase) = hb
 
 fun ui(block: () -> Unit) {
     Platform.runLater(block)
+}
+
+fun saveToJSON(text: String)
+{
+    val dir = File("Paths/JSON")
+    dir.mkdirs()
+    // Create file chooser
+    val fileChooser = FileChooser()
+    // val path = Paths.get("").toAbsolutePath().toFile()
+    fileChooser.setInitialDirectory(dir)
+    fileChooser.title = "Save File" //set the title of the Dialog window
+    val defaultSaveName = "path.json"
+    fileChooser.initialFileName = defaultSaveName
+    fileChooser.extensionFilters.addAll(
+        FileChooser.ExtensionFilter("JSON Files", "*.json")
+    )
+    // Open window
+    val stg = Stage()
+    // Get filename
+    val file = fileChooser.showSaveDialog(stg)
+    // Close the window
+    stg.close()
+    file.printWriter().use { out ->
+        out.println(text)
+    }
 }
 
 fun <R, T> mapprop(receiver: ReadOnlyProperty<R>, getter: ReadOnlyProperty<R>.() -> T): ReadOnlyProperty<T> =

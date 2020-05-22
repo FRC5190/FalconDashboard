@@ -18,6 +18,7 @@ class Main : App(MainView::class) {
     }
 
     override fun stop() {
+        // TODO: Remove this
         Settings.save()
     }
 }
