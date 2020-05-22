@@ -27,3 +27,4 @@ build/
 *.iml
 out/
 bin/
+settings.json
