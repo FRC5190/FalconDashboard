@@ -7,7 +7,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
-import org.ghrobotics.lib.debug.FalconDashboard
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.networktables.FalconNetworkTable
@@ -21,31 +20,42 @@ object Network {
 
         var lastRobotPose: Pose2d? = null
         var lastPathPose: Pose2d? = null
+        var lastTurretPose: Pose2d? = null
 
         GlobalScope.launch {
             while (isActive) {
 
                 ui {
-                    FieldChart.updateVisionTargets(FalconDashboard.visionTargets)
+                    FieldChart.updateVisionTargets(FalconDs.visionTargets)
                 }
 
                 val robotPose = Pose2d(
-                    FalconDashboard.robotX.meters,
-                    FalconDashboard.robotY.meters,
-                    Rotation2d(FalconDashboard.robotHeading)
+                    FalconDs.robotX.meters,
+                    FalconDs.robotY.meters,
+                    Rotation2d(FalconDs.robotHeading)
                 )
 
                 val pathPose = Pose2d(
-                    FalconDashboard.pathX.meters,
-                    FalconDashboard.pathY.meters,
-                    Rotation2d(FalconDashboard.pathHeading)
+                    FalconDs.pathX.meters,
+                    FalconDs.pathY.meters,
+                    Rotation2d(FalconDs.pathHeading)
+                )
+
+                val turretPose = Pose2d(
+                    FalconDs.robotX.meters,
+                    FalconDs.robotY.meters,
+                    Rotation2d(FalconDs.turretAngle)
                 )
 
                 val updateRobotPose = robotPose != lastRobotPose
                 if (updateRobotPose) ui { FieldChart.updateRobotPose(robotPose) }
                 lastRobotPose = robotPose
 
-                if (FalconDashboard.isFollowingPath) {
+                val updateTurretPose = turretPose != lastTurretPose
+                if (updateTurretPose) ui { FieldChart.updateTurretPose(turretPose) }
+                lastTurretPose = turretPose
+
+                if (FalconDs.isFollowingPath) {
                     if (!lastIsFollowingPath) {
                         // Only reset path cache when another path starts
                         ui { FieldChart.clear() }

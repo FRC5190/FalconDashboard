@@ -7,13 +7,13 @@
 /* TAB PANE */
 
 .jfx-tab-pane .tab-header-background {
-    -fx-background-color: #690a0f;
+    -fx-background-color: #0a9900;
 }
 
 .jfx-tab-pane .headers-region > .tab > .jfx-rippler {
-    -jfx-rippler-fill: #bbb;
+    -jfx-rippler-fill: #22ff02;
 }
 
 .jfx-tab-pane .tab-selected-line {
-    -fx-background-color: #bbb;
+    -fx-background-color: #22ff02;
 }

@@ -45,8 +45,10 @@ class KtCodeFragment : Fragment() {
 //                            "import org.ghrobotics.lib.mathematics.units.meters\n\n\n\n"
 //                )
 
+                /*
                 val name = Settings.name.value.decapitalize()
                     .replace("\\s+".toRegex(), "")
+                */
 
                 val dm = DecimalFormat("##.###")
 

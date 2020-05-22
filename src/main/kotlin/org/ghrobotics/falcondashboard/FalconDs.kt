@@ -31,8 +31,8 @@ object FalconDs {
     var robotX by falconDashboardTable["robotX"].delegate(5.0)
     var robotY by falconDashboardTable["robotY"].delegate(5.0)
     var robotHeading by falconDashboardTable["robotHeading"].delegate(1.0)
-
     var turretAngle by falconDashboardTable["turretYaw"].delegate(1.5)
+    var isTurretLocked by falconDashboardTable["isTurretLocked"].delegate(false)
 
     var isFollowingPath by falconDashboardTable["isFollowingPath"].delegate(false)
     var pathX by falconDashboardTable["pathX"].delegate(0.0)
@@ -50,7 +50,7 @@ object FalconDs {
         }
         get() {
             val poses= mutableListOf<Pose2d>()
-            val defaultTarget = doubleArrayOf(3.0, 3.0, 0.0) // (3.0,3.0,0.0)
+            val defaultTarget = doubleArrayOf(0.2, 5.8, 0.0) // (3.0,3.0,0.0)
             var arr = visionTargetEntry.getDoubleArray(defaultTarget)
             var pose = Pose2d(
                 arr[0].meters,

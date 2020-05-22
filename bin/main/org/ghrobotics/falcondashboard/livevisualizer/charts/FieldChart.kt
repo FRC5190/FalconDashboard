@@ -2,11 +2,11 @@ package org.ghrobotics.falcondashboard.livevisualizer.charts
 
 import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
+import edu.wpi.first.wpiutil.math.Num
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
-import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.lib.mathematics.twodim.geometry.Transform2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -25,6 +25,7 @@ object FieldChart : LineChart<Number, Number>(
     private val robotSeries = XYChart.Series<Number, Number>()
     private val pathSeries = XYChart.Series<Number, Number>()
     private val robotBoundingBoxSeries = XYChart.Series<Number, Number>()
+    private val turretSeries = XYChart.Series<Number, Number>()
     private val visionTargetSeries = XYChart.Series<Number, Number>()
 
     init {
@@ -48,6 +49,7 @@ object FieldChart : LineChart<Number, Number>(
         data.add(robotSeries)
         data.add(pathSeries)
         data.add(robotBoundingBoxSeries)
+        data.add(turretSeries)
         data.add(visionTargetSeries)
     }
 
@@ -60,6 +62,15 @@ object FieldChart : LineChart<Number, Number>(
         }
     }
 
+    /*
+    fun addTurretPose(pose2d: Pose2d) {
+        @Suppress("UNCHECKED_CAST")
+        turretSeries.data(
+            pose2d.translation.x_u.inMeters(),
+            pose2d.translation.y_u.inMeters()
+        )
+    }
+    */
     fun addRobotPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         robotSeries.data(
@@ -86,6 +97,31 @@ object FieldChart : LineChart<Number, Number>(
         }
     }
 
+    /*
+    fun updateTurretPose(pose2d: Pose2d) {
+        turretSeries.data.clear()
+        getTurretBoundingBox(pose2d).forEach {
+            turretSeries.data(
+                it.translation.x_u.inMeters(),
+                it.translation.y_u.inMeters()
+            )
+        }
+    }
+    */
+
+    fun updateTurretPose(pose2d: Pose2d) {
+        turretSeries.data.clear()
+        val data = XYChart.Data<Number, Number>(
+            pose2d.translation.x_u.inMeters(),
+            pose2d.translation.y_u.inMeters()
+        )
+        data.node = TurretNode(
+            pose2d.rotation,
+            (xAxis as NumberAxis).scaleProperty()
+        )
+        turretSeries.data.add(data)
+    }
+
     fun updateVisionTargets(newVisionTargets: List<Pose2d>) {
         visionTargetSeries.data.clear()
         newVisionTargets.forEach {
@@ -107,25 +143,43 @@ object FieldChart : LineChart<Number, Number>(
         )
 
         val tr = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2, Settings.robotLength.value.meters / 2, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2, Settings.robotWidth.value.meters / 2, Rotation2d())
         )
 
-        // TODO: Try to understand weird 0.106 meters here
         val mid = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2.0 + 0.meters, 0.meters, Rotation2d())
-            //Transform2d(Settings.robotLength.value.meters / 2.0 + 0.106.meters, 0.meters, Rotation2d())
+            // A little edge for the robot in front
+            Transform2d(Settings.robotLength.value.meters / 2.0 + 0.200.meters, 0.meters, Rotation2d())
         )
 
         val bl = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotLength.value.meters / 2, Rotation2d())
+            Transform2d(-Settings.robotLength.value.meters / 2, -Settings.robotWidth.value.meters / 2, Rotation2d())
         )
 
         val br = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotLength.value.meters / 2, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotWidth.value.meters / 2, Rotation2d())
         )
 
         return arrayOf(tl, tr, mid, br, bl, tl)
     }
+
+
+    /*
+    private fun getTurretBoundingBox(center: Pose2d): Array<Pose2d> {
+        // Top
+        val t = center
+        // TODO: Make this parametric
+        // Bottom Left
+        val bl = center.transformBy(
+            Transform2d(1.meters,1.meters, Rotation2d())
+        )
+        // Bottom Right
+        val br =center.transformBy(
+            Transform2d(1.meters,-1.meters,Rotation2d())
+        )
+        return arrayOf(t, bl, br, t)
+    }
+    */
+
 
     fun clear() {
         robotSeries.data.clear()

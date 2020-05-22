@@ -19,7 +19,7 @@ object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
             backgroundColor = MultiValue(arrayOf<Paint>(Color.LIGHTGRAY))
         }
 
-        setMinSize(54 * 25.0, 27 * 25.0)
+        setMinSize(1200.0, 600.0)
 
         axisSortingPolicy = SortingPolicy.NONE
         isLegendVisible = false
@@ -43,7 +43,7 @@ object VelocityChart : LineChart<Number, Number>(NumberAxis(), NumberAxis()) {
             while (t <= duration) {
                 val point = trajectory.sample(t)
                 t += dt
-                data(point.timeSeconds, abs(point.velocityMetersPerSecond) * 3.2808)
+                data(point.timeSeconds, abs(point.velocityMetersPerSecond) * 1) // to meters
             }
             this@VelocityChart.data.add(this)
         }

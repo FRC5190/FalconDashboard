@@ -10,6 +10,8 @@ import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.wrappers.networktables.FalconNetworkTable
+import kotlin.math.cos
+import kotlin.math.sin
 
 object Network {
 
@@ -21,6 +23,7 @@ object Network {
         var lastRobotPose: Pose2d? = null
         var lastPathPose: Pose2d? = null
         var lastTurretPose: Pose2d? = null
+        var lastTurretLock: Boolean? = null
 
         GlobalScope.launch {
             while (isActive) {
@@ -42,17 +45,20 @@ object Network {
                 )
 
                 val turretPose = Pose2d(
-                    FalconDs.robotX.meters,
-                    FalconDs.robotY.meters,
+                    FalconDs.robotX.meters + Properties.kTurretOffsetX* cos(FalconDs.robotHeading),
+                    FalconDs.robotY.meters + Properties.kTurretOffsetX* sin(FalconDs.robotHeading),
                     Rotation2d(FalconDs.turretAngle)
                 )
+
+                val isTurretLocked = FalconDs.isTurretLocked
 
                 val updateRobotPose = robotPose != lastRobotPose
                 if (updateRobotPose) ui { FieldChart.updateRobotPose(robotPose) }
                 lastRobotPose = robotPose
 
+                val updateTurretLock = isTurretLocked != lastTurretLock
                 val updateTurretPose = turretPose != lastTurretPose
-                if (updateTurretPose) ui { FieldChart.updateTurretPose(turretPose) }
+                if (updateTurretPose || updateTurretLock) ui { FieldChart.updateTurretPose(turretPose, isTurretLocked) }
                 lastTurretPose = turretPose
 
                 if (FalconDs.isFollowingPath) {

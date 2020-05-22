@@ -49,6 +49,7 @@ class GeneratorView : View() {
                 paddingAll = 20.0
                 maxWidth = 300.px
                 spacing = 5.px
+                //backgroundColor = multi(Color.web("#353535"))
             }
 
             /*

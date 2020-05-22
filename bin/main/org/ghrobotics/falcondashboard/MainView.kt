@@ -8,7 +8,7 @@ import tornadofx.View
 import tornadofx.plusAssign
 import tornadofx.tab
 
-class MainView : View("FRC 5190 Falcon Dashboard") {
+class MainView : View("FRC 7285 Sneaky Dashboard") {
     override val root: Parent = jfxtabpane {
         stylesheets += resources["/AppStyle.css"]
 
