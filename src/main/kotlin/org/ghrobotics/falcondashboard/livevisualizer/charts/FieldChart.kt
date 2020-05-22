@@ -6,7 +6,6 @@ import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
 import javafx.scene.paint.Color
-import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.lib.mathematics.twodim.geometry.Transform2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
@@ -62,6 +61,14 @@ object FieldChart : LineChart<Number, Number>(
         }
     }
 
+    fun addTurretPose(pose2d: Pose2d) {
+        @Suppress("UNCHECKED_CAST")
+        turretSeries.data(
+            pose2d.translation.x_u.inMeters(),
+            pose2d.translation.y_u.inMeters()
+        )
+    }
+
     fun addRobotPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         robotSeries.data(
@@ -86,6 +93,11 @@ object FieldChart : LineChart<Number, Number>(
                 it.translation.y_u.inMeters()
             )
         }
+    }
+
+    fun updateTurretPose(pose2d: Pose2d) {
+        turretSeries.data.clear()
+
     }
 
     fun updateVisionTargets(newVisionTargets: List<Pose2d>) {

@@ -8,10 +8,7 @@
 
 package org.ghrobotics.falcondashboard
 
-import com.github.salomonbrys.kotson.fromJson
-import com.github.salomonbrys.kotson.jsonObject
 import com.google.gson.Gson
-import com.google.gson.JsonObject
 import edu.wpi.first.wpilibj.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.units.derived.degrees
@@ -63,28 +60,6 @@ object FalconDs {
             poses.add(pose)
             return poses.toList()
         }
-        /*
-                set(value) {
-            visionTargetEntry.setStringArray(
-                value.map {
-                    jsonObject(
-                        "x" to it.translation.x,
-                        "y" to it.translation.y,
-                        "angle" to it.rotation.degrees
-                    ).toString()
-                }.toTypedArray()
-            )
-        }
-        get() = visionTargetEntry.getStringArray(emptyArray())
-            .map {
-                val data = kGson.fromJson<JsonObject>(it)
-                Pose2d(
-                    data["x"].asDouble.meters,
-                    data["y"].asDouble.meters,
-                    data["angle"].asDouble.degrees.toRotation2d()
-                )
-            }
-         */
 
 
     private val kGson = Gson()

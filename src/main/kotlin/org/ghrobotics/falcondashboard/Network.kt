@@ -20,6 +20,7 @@ object Network {
 
         var lastRobotPose: Pose2d? = null
         var lastPathPose: Pose2d? = null
+        var lastTurretPose: Pose2d? = null
 
         GlobalScope.launch {
             while (isActive) {
@@ -40,9 +41,19 @@ object Network {
                     Rotation2d(FalconDs.pathHeading)
                 )
 
+                val turretPose = Pose2d(
+                    FalconDs.robotX.meters,
+                    FalconDs.robotY.meters,
+                    Rotation2d(FalconDs.turretAngle)
+                )
+
                 val updateRobotPose = robotPose != lastRobotPose
                 if (updateRobotPose) ui { FieldChart.updateRobotPose(robotPose) }
                 lastRobotPose = robotPose
+
+                val updateTurretPose = turretPose != lastTurretPose
+                if (updateTurretPose) ui { FieldChart.updateTurretPose(turretPose) }
+                lastTurretPose = turretPose
 
                 if (FalconDs.isFollowingPath) {
                     if (!lastIsFollowingPath) {
