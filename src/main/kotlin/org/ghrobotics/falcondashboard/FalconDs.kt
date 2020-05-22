@@ -30,6 +30,7 @@ typealias LiveDashboard = FalconDs
 object FalconDs {
     private val falconDashboardTable = FalconNetworkTable.getTable("Live_Dashboard")
 
+    // TODO: Change default values back to 0
     var robotX by falconDashboardTable["robotX"].delegate(5.0)
     var robotY by falconDashboardTable["robotY"].delegate(5.0)
     var robotHeading by falconDashboardTable["robotHeading"].delegate(1.0)
@@ -44,6 +45,26 @@ object FalconDs {
     private val visionTargetEntry = falconDashboardTable["visionTargets"]
     var visionTargets: List<Pose2d>
         set(value) {
+            var setArray = DoubleArray(3)
+            setArray.set(0, value.get(0).translation.x)
+            setArray.set(1, value.get(0).translation.y)
+            setArray.set(2, value.get(0).rotation.degrees)
+            visionTargetEntry.setDoubleArray(setArray)
+        }
+        get() {
+            val poses= mutableListOf<Pose2d>()
+            val defaultTarget = doubleArrayOf(3.0, 3.0, 0.0) // (3.0,3.0,0.0)
+            var arr = visionTargetEntry.getDoubleArray(defaultTarget)
+            var pose = Pose2d(
+                arr[0].meters,
+                arr[1].meters,
+                arr[2].degrees.toRotation2d()
+            )
+            poses.add(pose)
+            return poses.toList()
+        }
+        /*
+                set(value) {
             visionTargetEntry.setStringArray(
                 value.map {
                     jsonObject(
@@ -63,6 +84,8 @@ object FalconDs {
                     data["angle"].asDouble.degrees.toRotation2d()
                 )
             }
+         */
+
 
     private val kGson = Gson()
 }

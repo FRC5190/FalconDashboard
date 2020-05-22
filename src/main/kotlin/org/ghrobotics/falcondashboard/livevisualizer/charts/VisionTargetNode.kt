@@ -16,7 +16,7 @@ class VisionTargetNode(
     init {
         style {
             backgroundColor = multi(Color.TRANSPARENT)
-            borderColor = multi(box(Color.GREEN))
+            borderColor = multi(box(Color.AQUA))
             borderWidth = multi(box(0.25.em))
         }
         rotate = (-rotation).degrees
