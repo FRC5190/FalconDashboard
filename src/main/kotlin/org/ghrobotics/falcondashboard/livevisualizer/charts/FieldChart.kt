@@ -25,6 +25,7 @@ object FieldChart : LineChart<Number, Number>(
     private val robotSeries = XYChart.Series<Number, Number>()
     private val pathSeries = XYChart.Series<Number, Number>()
     private val robotBoundingBoxSeries = XYChart.Series<Number, Number>()
+    private val turretSeries = XYChart.Series<Number, Number>()
     private val visionTargetSeries = XYChart.Series<Number, Number>()
 
     init {
@@ -48,6 +49,7 @@ object FieldChart : LineChart<Number, Number>(
         data.add(robotSeries)
         data.add(pathSeries)
         data.add(robotBoundingBoxSeries)
+        data.add(turretSeries)
         data.add(visionTargetSeries)
     }
 
@@ -107,21 +109,20 @@ object FieldChart : LineChart<Number, Number>(
         )
 
         val tr = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2, Settings.robotLength.value.meters / 2, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2, Settings.robotWidth.value.meters / 2, Rotation2d())
         )
 
-        // TODO: Try to understand weird 0.106 meters here
         val mid = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2.0 + 0.meters, 0.meters, Rotation2d())
-            //Transform2d(Settings.robotLength.value.meters / 2.0 + 0.106.meters, 0.meters, Rotation2d())
+            // A little edge for the robot in front
+            Transform2d(Settings.robotLength.value.meters / 2.0 + 0.200.meters, 0.meters, Rotation2d())
         )
 
         val bl = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotLength.value.meters / 2, Rotation2d())
+            Transform2d(-Settings.robotLength.value.meters / 2, -Settings.robotWidth.value.meters / 2, Rotation2d())
         )
 
         val br = center.transformBy(
-            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotLength.value.meters / 2, Rotation2d())
+            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotWidth.value.meters / 2, Rotation2d())
         )
 
         return arrayOf(tl, tr, mid, br, bl, tl)
