@@ -32,7 +32,7 @@ object PositionChart : LineChart<Number, Number>(
 ) {
     // Series
     private val seriesXY = Series<Number, Number>()
-    public val seriesWayPoints = Series<Number, Number>()
+    private val seriesWayPoints = Series<Number, Number>()
 
     fun euclideanDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
         return Math.sqrt(Math.pow(x1-x2,2.0) + Math.pow(y1-y2,2.0))

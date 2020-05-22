@@ -3,7 +3,9 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2020.2.2"
     id "com.google.osdetector" version "1.6.2"
     id "application"
+    // id "java"
 }
+
 
 ext.platform = osdetector.os == 'osx' ? 'mac' : osdetector.os == 'windows' ? 'win' : osdetector.os
 mainClassName = "org.ghrobotics.falcondashboard.MainKt"
@@ -44,11 +46,22 @@ dependencies {
     // WPILib
     compile wpi.deps.wpilib()
 
+    // NT JNI Compile
+    compile "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:windowsx86-64"
+    compile "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:windowsx86"
+    compile "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:linuxx86-64"
+    compile "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:osxx86-64"
+
     // NT JNI for Runtime
     runtime "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:windowsx86"
     runtime "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:windowsx86-64"
     runtime "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:linuxx86-64"
     runtime "edu.wpi.first.ntcore:ntcore-jni:2020.2.2:osxx86-64"
+
+    // Kotlin
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.50"
+
+
 }
 
 compileKotlin {
@@ -59,4 +72,11 @@ compileKotlin {
 
 wrapper {
     gradleVersion = "6.0.1"
+}
+
+jar {
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    manifest {
+        attributes 'Main-Class': "org.ghrobotics.falcondashboard.MainKt"
+    }
 }
