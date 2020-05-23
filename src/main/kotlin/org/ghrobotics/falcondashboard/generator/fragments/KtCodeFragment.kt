@@ -3,7 +3,7 @@ package org.ghrobotics.falcondashboard.generator.fragments
 import javafx.scene.layout.Priority
 import javafx.scene.text.Font
 import kfoenix.jfxtextarea
-import org.ghrobotics.falcondashboard.Settings
+import org.ghrobotics.falcondashboard.Settings.reversed
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
@@ -63,7 +63,7 @@ class KtCodeFragment : Fragment() {
                     if (it != GeneratorView.waypoints.last()) append(",")
                     append("\n")
                 }
-                append("),config)\n")
+                append("),${if (reversed.value)  "configReversed" else "configForward"})\n")
 //                append(
 //                    "    constraints = listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.meters.acceleration),\n" +
 //                            "    startVelocity = 0.0.meters.velocity,\n" +
