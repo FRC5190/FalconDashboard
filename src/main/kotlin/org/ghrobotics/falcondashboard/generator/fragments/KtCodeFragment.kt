@@ -53,17 +53,17 @@ class KtCodeFragment : Fragment() {
                 val dm = DecimalFormat("##.###")
 
 //                append("val $name = DefaultTrajectoryGenerator.generateTrajectory(\n")
-                append("wayPoints = listOf(//values are in meters and degrees\n")
+                append("Trajectory name = TrajectoryGenerator.generateTrajectory(\nList.of(\n")
                 GeneratorView.waypoints.forEach {
                     append(
-                        "    Pose2d(${dm.format(it.translation.x_u.inMeters())}, " +
-                                "${dm.format(it.translation.y_u.inMeters())}, " +
-                                "${dm.format(it.rotation.degrees)})"
+                        "    new Pose2d(${dm.format(it.translation.x_u.inMeters())}.0, " +
+                                "${dm.format(it.translation.y_u.inMeters())}.0, new Rotation2d(" +
+                                "${dm.format(it.rotation.radians)}))"
                     )
                     if (it != GeneratorView.waypoints.last()) append(",")
                     append("\n")
                 }
-                append("),\n")
+                append("),config)\n")
 //                append(
 //                    "    constraints = listOf(CentripetalAccelerationConstraint(${Settings.maxCentripetalAcceleration.value}.meters.acceleration),\n" +
 //                            "    startVelocity = 0.0.meters.velocity,\n" +
