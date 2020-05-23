@@ -56,8 +56,8 @@ class KtCodeFragment : Fragment() {
                 append("Trajectory name = TrajectoryGenerator.generateTrajectory(\nList.of(\n")
                 GeneratorView.waypoints.forEach {
                     append(
-                        "    new Pose2d(${dm.format(it.translation.x_u.inMeters())}.0, " +
-                                "${dm.format(it.translation.y_u.inMeters())}.0, new Rotation2d(" +
+                        "    new Pose2d(${dm.format(it.translation.x_u.inMeters())}, " +
+                                "${dm.format(it.translation.y_u.inMeters())}, new Rotation2d(" +
                                 "${dm.format(it.rotation.radians)}))"
                     )
                     if (it != GeneratorView.waypoints.last()) append(",")
