@@ -145,24 +145,6 @@ object FieldChart : LineChart<Number, Number>(
     }
 
 
-    /*
-    private fun getTurretBoundingBox(center: Pose2d): Array<Pose2d> {
-        // Top
-        val t = center
-        // TODO: Make this parametric
-        // Bottom Left
-        val bl = center.transformBy(
-            Transform2d(1.meters,1.meters, Rotation2d())
-        )
-        // Bottom Right
-        val br =center.transformBy(
-            Transform2d(1.meters,-1.meters,Rotation2d())
-        )
-        return arrayOf(t, bl, br, t)
-    }
-    */
-
-
     fun clear() {
         robotSeries.data.clear()
         pathSeries.data.clear()

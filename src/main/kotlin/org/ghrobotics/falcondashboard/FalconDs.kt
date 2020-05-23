@@ -27,11 +27,15 @@ typealias LiveDashboard = FalconDs
 object FalconDs {
     private val falconDashboardTable = FalconNetworkTable.getTable("Live_Dashboard")
 
+    // Sample set
+    // private val aEntry = falconDashboardTable["robotA"]
+    // var b = aEntry.setDouble(2.0)
+
     // TODO: Change default values back to 0
     var robotX by falconDashboardTable["robotX"].delegate(5.0)
     var robotY by falconDashboardTable["robotY"].delegate(5.0)
     var robotHeading by falconDashboardTable["robotHeading"].delegate(1.0)
-    var turretAngle by falconDashboardTable["turretYaw"].delegate(1.5)
+    var turretAngle by falconDashboardTable["turretAngle"].delegate(1.5)
     var isTurretLocked by falconDashboardTable["isTurretLocked"].delegate(false)
 
     var isFollowingPath by falconDashboardTable["isFollowingPath"].delegate(false)

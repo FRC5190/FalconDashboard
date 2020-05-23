@@ -6,9 +6,8 @@ import javafx.beans.property.ReadOnlyProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
-import org.ghrobotics.falcondashboard.Properties
+import javafx.scene.shape.Polygon
 import org.ghrobotics.falcondashboard.Settings
-import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.mapprop
 import org.ghrobotics.lib.mathematics.units.inMeters
 import org.ghrobotics.lib.mathematics.units.meters
@@ -28,27 +27,43 @@ open class RobotNode(
             ) { (-value).degrees })
     }
 
-    val robotPane = object : StackPane() {
-        init {
-            style {
-                backgroundColor = multi(Color.TRANSPARENT)
-                borderColor = multi(box(Color.BLUE))
-                borderRadius = multi(box(0.5.em))
-                borderWidth = multi(box(0.25.em))
-            }
-            rotateProperty().bind(robotRotation)
-            bindRobotRotation()
-            usePrefHeight = true
-            usePrefWidth = true
-            prefHeightProperty()
-                .bind(scaleProperty.multiply(Settings.robotWidth.value.meters.inMeters()))
-            prefWidthProperty()
-                .bind(scaleProperty.multiply(Settings.robotLength.value.meters.inMeters()))
-        }
-    }
-
     init {
-        children.add(robotPane)
+        style {
+            backgroundColor = multi(Color.TRANSPARENT)
+            borderColor = multi(box(Color.BLUE)) // BLUE
+            borderRadius = multi(box(0.5.em))
+            borderWidth = multi(box(0.25.em))
+        }
+        rotateProperty().bind(robotRotation)
+        bindRobotRotation()
+        usePrefHeight = true
+        usePrefWidth = true
+        prefHeightProperty()
+            .bind(scaleProperty.multiply(Settings.robotWidth.value.meters.inMeters()))
+        prefWidthProperty()
+            .bind(scaleProperty.multiply(Settings.robotLength.value.meters.inMeters()))
+
+
+        // New Robot
+        val polygon = Polygon()
+        polygon.fill = Color.TRANSPARENT
+        polygon.stroke = Color.RED
+        polygon.strokeWidth = 2.5 // 0.25.em.value
+        // TODO: Add transformation (translateX) (needed because of he arrow head)
+        polygon.points.addAll(
+            arrayOf(
+                0.0,0.0,
+                // -prefHeight*0.2, prefWidth/2,
+                0.0, prefHeight,
+                prefWidth, prefHeight,
+                prefWidth*1.2, prefHeight/2,
+                prefWidth, 0.0
+            )
+        )
+        children.add(polygon)
+
+
+
     }
 
 }

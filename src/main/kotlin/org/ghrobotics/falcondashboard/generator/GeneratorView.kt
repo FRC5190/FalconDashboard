@@ -7,6 +7,8 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
 import javafx.beans.property.SimpleObjectProperty
 import javafx.geometry.Pos
+import javafx.scene.input.MouseButton
+import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
@@ -49,7 +51,7 @@ class GeneratorView : View() {
                 paddingAll = 20.0
                 maxWidth = 300.px
                 spacing = 5.px
-                //backgroundColor = multi(Color.web("#353535"))
+                // backgroundColor = multi(Color.web("#353535"))
             }
 
             /*
@@ -127,45 +129,6 @@ class GeneratorView : View() {
                         WaypointsTable.loadFromFile()
                     }
                 }
-                /*
-                jfxbutton {
-                    prefWidth = 290.0
-                    text = "Load from text"
-                    action {
-                        object : Fragment() {
-                            override val root = vbox {
-
-                                prefWidth = 600.0
-                                prefHeight = 200.0
-
-                                val textEntryArea = textarea {
-                                    prefWidth = 290.0
-
-                                    isWrapText = true
-
-                                    text = "                        Pose2d(11.75.meters, 25.689.meters, 0.0.degrees),\n" +
-                                            "                        Pose2d(20.383.meters, 18.592.meters, (-68).degrees)"
-                                }
-                                jfxbutton {
-                                    prefWidth = 290.0
-                                    text = "Load from text"
-                                    action {
-                                        WaypointsTable.loadFromText(textEntryArea.text)
-                                    }
-                                }
-                            }
-                        }.openModal(stageStyle = StageStyle.UTILITY)
-                    }
-                }
-                jfxbutton {
-                    prefWidth = 290.0
-                    text = "Generate JSON"
-                    action {
-                        find<CodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
-
-                    }
-                }
-                */
                 jfxbutton {
                     prefWidth = 290.0
                     text = "Save To JSON"
@@ -182,6 +145,11 @@ class GeneratorView : View() {
                         find<KtCodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
                     }
                 }
+                jfxbutton {
+                    prefWidth = 290.0
+                    style = "-fx-graphic: url(\"green_play_48px.png\");"
+                }
+
             }
         }
         jfxtabpane {
@@ -280,6 +248,7 @@ class GeneratorView : View() {
             val time = BigDecimal(this.trajectory.get().totalTimeSeconds).setScale(2, RoundingMode.HALF_EVEN)
             trajectoryTime.set("Trajectory Time (s): " + time)
             // TODO: Change robot width and height here
+            // val mouseEvent = MouseEvent(MouseEvent.MOUSE_CLICKED, 1.0, 2.0, 3.0, 4.0, MouseButton.PRIMARY, 1, true, true, true, true, true, true, true, true, true, true, null)
         }
     }
 }
