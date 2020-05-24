@@ -45,6 +45,7 @@ class FollowerNode (
                 prefWidth, 0.0
             )
         )
+        polygon.translateX = prefWidth*0.1
         children.add(polygon)
 
     }

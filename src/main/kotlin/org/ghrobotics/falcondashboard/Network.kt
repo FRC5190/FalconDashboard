@@ -29,10 +29,11 @@ object Network {
 
         GlobalScope.launch {
             while (isActive) {
-
                 ui {
+                    // TODO: Find a way to erase the green little dot as well
                     if (PositionChart.isTimerFinished) {
                         triggerWaypoints()
+                        PositionChart.followerSeries.data.clear()
                         PositionChart.isTimerFinished = false
                     }
                 }
