@@ -38,7 +38,7 @@ object WaypointsTable : TableView<Pose2d>(GeneratorView.waypoints) {
     }
 
     private val columnAngle = column<Pose2d, Double>("Angle") {
-        SimpleObjectProperty(round(it.value.rotation.degrees))
+        SimpleObjectProperty(round(it.value.rotation.degrees * 1E3) / 1E3)
     }
 
     private val cellFactory = {

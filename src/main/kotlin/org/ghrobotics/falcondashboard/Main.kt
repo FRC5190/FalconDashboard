@@ -12,7 +12,8 @@ class Main : App(MainView::class) {
         Settings
         Network
 
-        TrajectoryGenerator.setErrorHandler { _, _ ->  
+        TrajectoryGenerator.setErrorHandler { _, _ ->
+            // println("Invalid trajectory")
             find<InvalidTrajectoryFragment>().openModal(StageStyle.UTILITY)
         }
     }

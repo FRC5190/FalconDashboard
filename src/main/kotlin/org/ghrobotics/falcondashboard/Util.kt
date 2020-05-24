@@ -10,6 +10,8 @@ import javafx.stage.FileChooser
 import javafx.stage.Stage
 import javafx.util.converter.NumberStringConverter
 import kfoenix.jfxtextfield
+import org.ghrobotics.falcondashboard.generator.charts.PositionChart
+import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable
 import tornadofx.*
 import java.io.File
 
@@ -28,6 +30,18 @@ fun ui(block: () -> Unit) {
     Platform.runLater(block)
 }
 
+
+fun triggerWaypoints() {
+    // println("Waypoints triggered")
+    val loopSize = WaypointsTable.items.size
+    for (idx in 0 until loopSize)
+    {
+        WaypointsTable.items.add(0, WaypointsTable.items[WaypointsTable.items.lastIndex])
+        WaypointsTable.items.removeAt(WaypointsTable.items.lastIndex)
+    }
+    PositionChart.followerSeries.data.clear()
+
+}
 fun saveToJSON(text: String)
 {
     val dir = File("Paths/JSON")

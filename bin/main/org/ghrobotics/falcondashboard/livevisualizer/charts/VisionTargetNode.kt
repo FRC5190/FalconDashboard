@@ -16,13 +16,15 @@ class VisionTargetNode(
     init {
         style {
             backgroundColor = multi(Color.TRANSPARENT)
-            borderColor = multi(box(Color.AQUA))
+            borderColor = multi(box(Color.FIREBRICK))
             borderWidth = multi(box(0.25.em))
         }
         rotate = (-rotation).degrees
 
         usePrefHeight = true
         usePrefWidth = true
+
+
         prefHeightProperty()
             .bind(scaleProperty.multiply(Properties.kTargetWidth.inMeters()))
         prefWidthProperty()

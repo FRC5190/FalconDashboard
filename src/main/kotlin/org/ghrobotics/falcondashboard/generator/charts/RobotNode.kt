@@ -30,7 +30,7 @@ open class RobotNode(
     init {
         style {
             backgroundColor = multi(Color.TRANSPARENT)
-            borderColor = multi(box(Color.BLUE)) // BLUE
+            borderColor = multi(box(Color.TRANSPARENT)) // BLUE
             borderRadius = multi(box(0.5.em))
             borderWidth = multi(box(0.25.em))
         }

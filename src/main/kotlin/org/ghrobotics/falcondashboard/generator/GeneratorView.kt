@@ -6,13 +6,18 @@ import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
 import edu.wpi.first.wpilibj.trajectory.TrajectoryUtil
 import edu.wpi.first.wpilibj.trajectory.constraint.CentripetalAccelerationConstraint
 import javafx.beans.property.SimpleObjectProperty
+import javafx.event.Event
+import javafx.event.EventTarget
 import javafx.geometry.Pos
 import javafx.scene.input.MouseButton
 import javafx.scene.input.MouseEvent
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
-import kfoenix.*
+import kfoenix.jfxbutton
+import kfoenix.jfxcheckbox
+import kfoenix.jfxtabpane
+import org.ghrobotics.falcondashboard.MainView
 import org.ghrobotics.falcondashboard.Settings.autoPathFinding
 import org.ghrobotics.falcondashboard.Settings.clampedCubic
 import org.ghrobotics.falcondashboard.Settings.endVelocity
@@ -20,10 +25,10 @@ import org.ghrobotics.falcondashboard.Settings.maxAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxCentripetalAcceleration
 import org.ghrobotics.falcondashboard.Settings.maxVelocity
 import org.ghrobotics.falcondashboard.Settings.reversed
-import org.ghrobotics.falcondashboard.Settings.startVelocity
-import org.ghrobotics.falcondashboard.Settings.trajectoryTime
 import org.ghrobotics.falcondashboard.Settings.robotLength
 import org.ghrobotics.falcondashboard.Settings.robotWidth
+import org.ghrobotics.falcondashboard.Settings.startVelocity
+import org.ghrobotics.falcondashboard.Settings.trajectoryTime
 import org.ghrobotics.falcondashboard.createNumericalEntry
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.generator.charts.VelocityChart
@@ -31,16 +36,18 @@ import org.ghrobotics.falcondashboard.generator.fragments.KtCodeFragment
 import org.ghrobotics.falcondashboard.generator.fragments.WaypointFragment
 import org.ghrobotics.falcondashboard.generator.tables.WaypointsTable
 import org.ghrobotics.falcondashboard.saveToJSON
+import org.ghrobotics.falcondashboard.triggerWaypoints
 import org.ghrobotics.lib.mathematics.epsilonEquals
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.twodim.trajectory.FalconTrajectoryConfig
-import org.ghrobotics.lib.mathematics.twodim.trajectory.optimization.PathFinder
 import org.ghrobotics.lib.mathematics.units.derived.acceleration
 import org.ghrobotics.lib.mathematics.units.derived.velocity
 import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.*
 import java.math.BigDecimal
 import java.math.RoundingMode
+import java.util.*
+import kotlin.concurrent.schedule
 
 class GeneratorView : View() {
 
@@ -145,11 +152,26 @@ class GeneratorView : View() {
                         find<KtCodeFragment>().openModal(stageStyle = StageStyle.UTILITY)
                     }
                 }
+
+                /*
+                jfxbutton {
+                    prefWidth = 290.0
+                    text = "Trigger waypoints"
+                    action {
+                        // PositionChart.followerBoundingBoxSeries.data.clear()
+                        // Pose2d(3.0.meters,5.0.meters)
+                        triggerWaypoints()
+                    }
+                }
+                */
+
                 jfxbutton {
                     prefWidth = 290.0
                     style = "-fx-graphic: url(\"green_play_48px.png\");"
+                    action {
+                        PositionChart.playTrajectory()
+                    }
                 }
-
             }
         }
         jfxtabpane {
@@ -173,6 +195,9 @@ class GeneratorView : View() {
     }
 
     companion object {
+
+        var isInitialized = true
+
         val waypoints = observableListOf(
             Pose2d(3.meters, 6.meters, Rotation2d()),
             Pose2d(5.meters, 7.5.meters, Rotation2d())
@@ -188,7 +213,7 @@ class GeneratorView : View() {
         val trajectory = SimpleObjectProperty(TrajectoryGenerator.generateTrajectory(waypoints, config))
 
         init {
-            update()
+
             waypoints.onChange { update() }
             reversed.onChange { update() }
             clampedCubic.onChange { update() }
@@ -214,21 +239,6 @@ class GeneratorView : View() {
                 maxCentripetalAcceleration.value epsilonEquals 0.0
             ) return
 
-            val wayPoints = if (autoPathFinding.value) {
-                val pathFinder = PathFinder(
-                    3.5.meters,
-                    PathFinder.k2018CubesSwitch,
-                    PathFinder.k2018LeftSwitch,
-                    PathFinder.k2018Platform
-                )
-                waypoints.zipWithNext { start, end ->
-                    kotlin.runCatching {
-                        pathFinder.findPath(start, end)!!
-                    }.recover { listOf(start, end) }
-                        .getOrThrow()
-                }.flatten().toSet().toList()
-            } else waypoints.toList()
-
             val config = FalconTrajectoryConfig(maxVelocity.value.meters.velocity, maxAcceleration.value.meters.acceleration)
                 .setStartVelocity(startVelocity.value.meters.velocity)
                 .setEndVelocity(endVelocity.value.meters.velocity)
@@ -236,19 +246,20 @@ class GeneratorView : View() {
                 .setReversed(reversed.value)
 
             if(clampedCubic.value) {
-                val startPose = wayPoints.first()
+                val startPose = waypoints.first()
                 val endPose = waypoints.last()
-                val interiorWaypoints = wayPoints.subList(1, waypoints.size - 1).map { it.translation }
+                val interiorWaypoints = waypoints.subList(1, waypoints.size - 1).map { it.translation }
 
                 this.trajectory.set(TrajectoryGenerator.generateTrajectory(startPose, interiorWaypoints, endPose, config))
             } else {
-                this.trajectory.set(TrajectoryGenerator.generateTrajectory(wayPoints, config))
+                this.trajectory.set(TrajectoryGenerator.generateTrajectory(waypoints, config))
             }
             // Update trajectory time
             val time = BigDecimal(this.trajectory.get().totalTimeSeconds).setScale(2, RoundingMode.HALF_EVEN)
             trajectoryTime.set("Trajectory Time (s): " + time)
             // TODO: Change robot width and height here
-            // val mouseEvent = MouseEvent(MouseEvent.MOUSE_CLICKED, 1.0, 2.0, 3.0, 4.0, MouseButton.PRIMARY, 1, true, true, true, true, true, true, true, true, true, true, null)
+            // val mouseDrag = MouseDragEvent(MouseDragEvent.MOUSE_DRAGGED, 1.0, 2.0, 3.0, 4.0, MouseButton.PRIMARY, 1, true, true, true, true, true, true, true, true, true, true, null)
+            // val mouseEvent = MouseEvent(MouseEvent.MOUSE_DRAGGED, 1.0, 2.0, 3.0, 4.0, MouseButton.PRIMARY, 1, false, false, false, false, true, false, false, true, true, true, null)
         }
     }
 }

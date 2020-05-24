@@ -1,26 +1,35 @@
 package org.ghrobotics.falcondashboard.generator.charts
 
+import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
+import javafx.scene.chart.XYChart
 import javafx.scene.control.Tooltip
 import javafx.scene.input.MouseButton
 import javafx.scene.paint.Color
 import javafx.scene.paint.Paint
-import org.ghrobotics.falcondashboard.Properties
 import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart.setOnMouseClicked
+import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
+import org.ghrobotics.falcondashboard.livevisualizer.charts.TurretNode
+import org.ghrobotics.falcondashboard.ui
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
+import org.ghrobotics.lib.mathematics.twodim.geometry.Transform2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
-import org.ghrobotics.lib.mathematics.units.meters
 import org.ghrobotics.lib.mathematics.units.inMeters
+import org.ghrobotics.lib.mathematics.units.meters
 import tornadofx.MultiValue
 import tornadofx.bind
 import tornadofx.data
 import tornadofx.style
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.concurrent.schedule
+
 
 /**
  * Chart that is used to display the field view for the trajectory
@@ -33,9 +42,11 @@ object PositionChart : LineChart<Number, Number>(
     // Series
     private val seriesXY = Series<Number, Number>()
     private val seriesWayPoints = Series<Number, Number>()
+    val followerSeries = XYChart.Series<Number, Number>()
+    var isTimerFinished = false
 
-    fun euclideanDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
-        return Math.sqrt(Math.pow(x1-x2,2.0) + Math.pow(y1-y2,2.0))
+    private fun euclideanDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+        return Math.sqrt(Math.pow(x1-x2, 2.0) + Math.pow(y1-y2, 2.0))
     }
 
     init {
@@ -58,6 +69,8 @@ object PositionChart : LineChart<Number, Number>(
 
         data.add(seriesXY)
         data.add(seriesWayPoints)
+        data.add(followerSeries)
+
 
         // Add waypoint on double click
         setOnMouseClicked {
@@ -74,7 +87,6 @@ object PositionChart : LineChart<Number, Number>(
                 {
                     val x1 = xAxis.getValueForDisplay(xAxis.sceneToLocal(it.sceneX, it.sceneY).x).toDouble()
                     val y1 = yAxis.getValueForDisplay(yAxis.sceneToLocal(it.sceneX, it.sceneY).y).toDouble()
-                    println("Control down ")
                     // Find the closest waypoint
                     val distances: ArrayList<Double> = ArrayList()
                     for (idx in 0 until GeneratorView.waypoints.size)
@@ -133,7 +145,7 @@ object PositionChart : LineChart<Number, Number>(
     /**
      * Updates the trajectory on the field.
      */
-    public fun updateSeriesXY() {
+     fun updateSeriesXY() {
         seriesXY.data.clear()
 
         val duration = GeneratorView.trajectory.value.totalTimeSeconds
@@ -161,6 +173,102 @@ object PositionChart : LineChart<Number, Number>(
             )
             data.node.toBack()
         }
+    }
+
+
+    // Live player
+    private fun getFollowerBoundingBox(center: Pose2d): Array<Pose2d> {
+        val tl = center.transformBy(
+            Transform2d(-Settings.robotLength.value.meters / 2, Settings.robotWidth.value.meters / 2, Rotation2d())
+        )
+
+        val tr = center.transformBy(
+            Transform2d(Settings.robotLength.value.meters / 2, Settings.robotWidth.value.meters / 2, Rotation2d())
+        )
+
+        val mid = center.transformBy(
+            // A little edge for the robot to see front clearly
+            Transform2d(Settings.robotLength.value.meters / 2.0 + 0.200.meters, 0.meters, Rotation2d())
+        )
+
+        val bl = center.transformBy(
+            Transform2d(-Settings.robotLength.value.meters / 2, -Settings.robotWidth.value.meters / 2, Rotation2d())
+        )
+
+        val br = center.transformBy(
+            Transform2d(Settings.robotLength.value.meters / 2, -Settings.robotWidth.value.meters / 2, Rotation2d())
+        )
+
+        return arrayOf(tl, tr, mid, br, bl, tl)
+    }
+
+    /*
+    private fun updateFollowerPose(pose2d: Pose2d) {
+        followerBoundingBoxSeries.data.clear()
+        getFollowerBoundingBox(pose2d).forEach {
+            followerBoundingBoxSeries.data(
+                it.translation.x_u.inMeters(),
+                it.translation.y_u.inMeters()
+            )
+        }
+    }
+    */
+
+    private fun updateFollowerPose(pose2d: Pose2d) {
+        followerSeries.data.clear()
+        val data = XYChart.Data<Number, Number>(
+            pose2d.translation.x_u.inMeters(),
+            pose2d.translation.y_u.inMeters()
+        )
+
+        data.node = FollowerNode(
+            pose2d.rotation,
+            (xAxis as NumberAxis).scaleProperty()
+        )
+
+        followerSeries.data.add(data)
+    }
+
+    fun playTrajectory()
+    {
+        val duration = GeneratorView.trajectory.value.totalTimeSeconds
+        var t = 0.0
+        val dt = 0.02
+        val timer = Timer("scheduler", true);
+
+        timer.schedule(1000, 20)
+        {
+
+            // println("Timer is called")
+            if(t > duration)
+            {
+                // ui { followerBoundingBoxSeries.data.clear() }
+                println(followerSeries.data)
+                ui { followerSeries.data.clear() }
+                println(followerSeries.data)
+                isTimerFinished = true
+                timer.cancel()
+                timer.purge()
+            }
+            // println("Timer is called x2")
+
+            val point = GeneratorView.trajectory.value.sample(t)
+            t += dt
+
+            val followerPose = Pose2d(
+                point.poseMeters.translation.x_u.inMeters(),
+                point.poseMeters.translation.y_u.inMeters(),
+                Rotation2d(point.poseMeters.rotation.radians)
+            )
+            ui { updateFollowerPose(followerPose) }
+
+        }
+
+        println("End of play")
+        // ui { followerBoundingBoxSeries.data.clear() }
+        ui { followerSeries.data.clear() }
+
+
     }
 
     override fun resize(width: Double, height: Double) = super.resize(1200.0, 600.0)

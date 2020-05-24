@@ -15,5 +15,6 @@ class InvalidTrajectoryFragment : Fragment() {
 
             text("You generated an invalid trajectory. Please ensure all your angles are correct.")
         }
+
     }
 }

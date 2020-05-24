@@ -12,10 +12,7 @@ import javafx.scene.paint.Color
 import org.ghrobotics.falcondashboard.mapprop
 import org.ghrobotics.lib.mathematics.twodim.geometry.Translation2d
 import org.ghrobotics.lib.mathematics.units.meters
-import tornadofx.box
-import tornadofx.em
-import tornadofx.multi
-import tornadofx.style
+import tornadofx.*
 
 class PositionNode(
     private val data: XYChart.Data<Number, Number>,
@@ -38,9 +35,11 @@ class PositionNode(
             backgroundColor = multi(Color.TRANSPARENT)
             padding = box(1.5.em)
         }
+
+
         children.add(robotNode)
 
-        robotNode.robotPane.apply {
+        robotNode.apply {
             var mouseXOffset = 0.0
             var mouseYOffset = 0.0
 

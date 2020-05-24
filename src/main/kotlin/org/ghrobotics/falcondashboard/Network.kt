@@ -6,6 +6,8 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.ghrobotics.falcondashboard.generator.GeneratorView
+import org.ghrobotics.falcondashboard.generator.charts.PositionChart
 import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
 import org.ghrobotics.lib.mathematics.units.meters
@@ -27,6 +29,24 @@ object Network {
 
         GlobalScope.launch {
             while (isActive) {
+
+                ui {
+                    if (PositionChart.isTimerFinished) {
+                        triggerWaypoints()
+                        PositionChart.isTimerFinished = false
+                    }
+                }
+
+                /*
+                ui {
+                    if(GeneratorView.isInitialized)
+                    {
+                        triggerWaypoints()
+                        GeneratorView.isInitialized = false
+                        println("Network Initialized")
+                    }
+                }
+                */
 
                 ui {
                     FieldChart.updateVisionTargets(FalconDs.visionTargets)

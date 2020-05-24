@@ -2,7 +2,6 @@ package org.ghrobotics.falcondashboard.livevisualizer.charts
 
 import edu.wpi.first.wpilibj.geometry.Pose2d
 import edu.wpi.first.wpilibj.geometry.Rotation2d
-import edu.wpi.first.wpiutil.math.Num
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.scene.chart.XYChart
@@ -62,15 +61,6 @@ object FieldChart : LineChart<Number, Number>(
         }
     }
 
-    /*
-    fun addTurretPose(pose2d: Pose2d) {
-        @Suppress("UNCHECKED_CAST")
-        turretSeries.data(
-            pose2d.translation.x_u.inMeters(),
-            pose2d.translation.y_u.inMeters()
-        )
-    }
-    */
     fun addRobotPathPose(pose2d: Pose2d) {
         @Suppress("UNCHECKED_CAST")
         robotSeries.data(
@@ -97,28 +87,20 @@ object FieldChart : LineChart<Number, Number>(
         }
     }
 
-    /*
-    fun updateTurretPose(pose2d: Pose2d) {
-        turretSeries.data.clear()
-        getTurretBoundingBox(pose2d).forEach {
-            turretSeries.data(
-                it.translation.x_u.inMeters(),
-                it.translation.y_u.inMeters()
-            )
-        }
-    }
-    */
 
-    fun updateTurretPose(pose2d: Pose2d) {
+    fun updateTurretPose(pose2d: Pose2d, turretLocked: Boolean) {
         turretSeries.data.clear()
         val data = XYChart.Data<Number, Number>(
             pose2d.translation.x_u.inMeters(),
             pose2d.translation.y_u.inMeters()
         )
+
         data.node = TurretNode(
             pose2d.rotation,
+            turretLocked,
             (xAxis as NumberAxis).scaleProperty()
         )
+
         turretSeries.data.add(data)
     }
 
@@ -147,7 +129,7 @@ object FieldChart : LineChart<Number, Number>(
         )
 
         val mid = center.transformBy(
-            // A little edge for the robot in front
+            // A little edge for the robot to see front clearly
             Transform2d(Settings.robotLength.value.meters / 2.0 + 0.200.meters, 0.meters, Rotation2d())
         )
 
@@ -161,24 +143,6 @@ object FieldChart : LineChart<Number, Number>(
 
         return arrayOf(tl, tr, mid, br, bl, tl)
     }
-
-
-    /*
-    private fun getTurretBoundingBox(center: Pose2d): Array<Pose2d> {
-        // Top
-        val t = center
-        // TODO: Make this parametric
-        // Bottom Left
-        val bl = center.transformBy(
-            Transform2d(1.meters,1.meters, Rotation2d())
-        )
-        // Bottom Right
-        val br =center.transformBy(
-            Transform2d(1.meters,-1.meters,Rotation2d())
-        )
-        return arrayOf(t, bl, br, t)
-    }
-    */
 
 
     fun clear() {
