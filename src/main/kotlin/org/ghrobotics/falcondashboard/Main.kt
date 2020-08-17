@@ -1,6 +1,9 @@
 package org.ghrobotics.falcondashboard
 
+import edu.wpi.first.networktables.NetworkTablesJNI
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator
+import edu.wpi.first.wpiutil.CombinedRuntimeLoader
+import edu.wpi.first.wpiutil.WPIUtilJNI
 import javafx.stage.StageStyle
 import org.ghrobotics.falcondashboard.generator.fragments.InvalidTrajectoryFragment
 import tornadofx.App
@@ -12,7 +15,7 @@ class Main : App(MainView::class) {
         Settings
         Network
 
-        TrajectoryGenerator.setErrorHandler { _, _ ->  
+        TrajectoryGenerator.setErrorHandler { _, _ ->
             find<InvalidTrajectoryFragment>().openModal(StageStyle.UTILITY)
         }
     }
@@ -23,5 +26,8 @@ class Main : App(MainView::class) {
 }
 
 fun main(args: Array<String>) {
+    WPIUtilJNI.Helper.setExtractOnStaticLoad(false);
+    NetworkTablesJNI.Helper.setExtractOnStaticLoad(false);
+    CombinedRuntimeLoader.loadLibraries(Main::class.java, "wpiutiljni", "ntcorejni")
     launch<Main>(args)
 }
