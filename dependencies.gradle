@@ -1,0 +1,55 @@
+def nativeConfigName = "wpilibNatives"
+def nativeConfig = configurations.create(nativeConfigName)
+
+def nativeTasks = wpilibTools.createExtractionTasks {
+    configurationName = nativeConfigName
+}
+
+nativeTasks.addToSourceSetResources(sourceSets.main)
+
+wpilibTools.deps.wpilibVersion = "2020.+"
+
+nativeConfig.dependencies.add wpilibTools.deps.wpilib("ntcore")
+nativeConfig.dependencies.add wpilibTools.deps.wpilib("wpiutil")
+
+dependencies {
+    // We need to add the Kotlin stdlib in order to use most Kotlin language features.
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile "org.jetbrains.kotlin:kotlin-reflect"
+
+    // TornadoFX
+    compile("no.tornado:tornadofx:1.7.19") { transitive = false }
+
+    // Material Theme
+    compile "com.jfoenix:jfoenix:9.0.8"
+    compile "com.github.bkenn:kfoenix:0.1.3"
+
+    // Kotlin Coroutines
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.3"
+
+    // Kotson for Serialization
+    compile "com.github.salomonbrys.kotson:kotson:2.5.0"
+
+    // Falcon Library
+    compile "org.ghrobotics.FalconLibrary:core:bae099cf0c"
+    compile "org.ghrobotics.FalconLibrary:wpi:bae099cf0c"
+
+    // Add core wpilibj, wpiutil, and ntcore
+    implementation wpilibTools.deps.wpilibJava("wpiutil")
+    implementation wpilibTools.deps.wpilibJava("wpimath")
+    implementation wpilibTools.deps.wpilibJava("ntcore")
+
+    // Add Jackson serialization
+    implementation "com.fasterxml.jackson.core:jackson-annotations:2.10.0"
+    implementation "com.fasterxml.jackson.core:jackson-core:2.10.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.10.0"
+
+    // Add EJML
+    implementation group: "org.ejml", name: "ejml-simple", version: "0.38"
+
+    // Add JavaFX
+    implementation wpilibTools.deps.javafx("base")
+    implementation wpilibTools.deps.javafx("controls")
+    implementation wpilibTools.deps.javafx("fxml")
+    implementation wpilibTools.deps.javafx("graphics")
+}
