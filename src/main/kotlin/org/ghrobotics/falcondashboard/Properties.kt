@@ -13,6 +13,9 @@ object Properties {
     val kRobotLength = 0.78.meters
     val kRobotWidth = 0.71.meters
 
+    // Lookahead
+    val lookahead = 0.1
+
     // Turret offset
     val kTurretOffsetX = 0.3.meters
 

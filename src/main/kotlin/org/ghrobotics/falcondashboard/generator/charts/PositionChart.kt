@@ -13,12 +13,9 @@ import javafx.scene.paint.Paint
 import org.ghrobotics.falcondashboard.Settings
 import org.ghrobotics.falcondashboard.generator.GeneratorView
 import org.ghrobotics.falcondashboard.generator.charts.PositionChart.setOnMouseClicked
-import org.ghrobotics.falcondashboard.livevisualizer.charts.FieldChart
-import org.ghrobotics.falcondashboard.livevisualizer.charts.TurretNode
 import org.ghrobotics.falcondashboard.triggerWaypoints
 import org.ghrobotics.falcondashboard.ui
 import org.ghrobotics.lib.mathematics.twodim.geometry.Pose2d
-import org.ghrobotics.lib.mathematics.twodim.geometry.Transform2d
 import org.ghrobotics.lib.mathematics.twodim.geometry.x_u
 import org.ghrobotics.lib.mathematics.twodim.geometry.y_u
 import org.ghrobotics.lib.mathematics.units.inMeters
@@ -30,6 +27,11 @@ import tornadofx.style
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.concurrent.schedule
+import kotlin.math.cos
+import kotlin.math.sin
+import AdaptivePurePursuitController
+import kotlin.math.PI
+import kotlin.math.abs
 
 
 /**
@@ -206,36 +208,109 @@ object PositionChart : LineChart<Number, Number>(
     // Live Trajectory
     fun playTrajectory()
     {
-        val duration = GeneratorView.trajectory.value.totalTimeSeconds
-        var t = 0.0
-        val dt = 0.02
-        val timer = Timer("scheduler", true);
+        if(Settings.purePursuit.value == false) {
+            val duration = GeneratorView.trajectory.value.totalTimeSeconds
+            var t = 0.0
+            val dt = 0.02
+            val timer = Timer("scheduler", true);
 
-        timer.schedule(1000, 20)
-        {
-
-            if(t > duration)
+            timer.schedule(1000, 20)
             {
-                ui { followerSeries.data.clear() }
-                isTimerFinished = true
-                timer.cancel()
-                timer.purge()
+
+                if (t > duration) {
+                    ui { followerSeries.data.clear() }
+                    isTimerFinished = true
+                    timer.cancel()
+                    timer.purge()
+                }
+
+                val point = GeneratorView.trajectory.value.sample(t)
+                t += dt
+
+                val followerPose = Pose2d(
+                    point.poseMeters.translation.x_u.inMeters(),
+                    point.poseMeters.translation.y_u.inMeters(),
+                    Rotation2d(point.poseMeters.rotation.radians)
+                )
+                ui { updateFollowerPose(followerPose) }
+
             }
 
-            val point = GeneratorView.trajectory.value.sample(t)
-            t += dt
-
-            val followerPose = Pose2d(
+            ui { followerSeries.data.clear() }
+        }
+        else
+        {
+            var appc = AdaptivePurePursuitController()
+            appc.reset()
+            val trajectory = GeneratorView.trajectory.value
+            val point = trajectory.sample(0.0)
+            var followerPose = Pose2d(
                 point.poseMeters.translation.x_u.inMeters(),
                 point.poseMeters.translation.y_u.inMeters(),
                 Rotation2d(point.poseMeters.rotation.radians)
             )
-            ui { updateFollowerPose(followerPose) }
+            val duration = GeneratorView.trajectory.value.totalTimeSeconds
+            var t = 0.0
+            val dt = 0.02
+            val timer = Timer("scheduler", true)
+            val targetPose = trajectory.sample(duration)
+            var isReached = false
+            val translateAccuracy = 0.05
+            val rotateAccuracy = 0.1
 
+            timer.schedule(1000, 20)
+            {
+                val speeds = appc.update(trajectory, followerPose, followerPose.rotation.radians, Settings.reversed.value)
+                var leftSpeed = speeds[0]
+                var rightSpeed = speeds[1]
+                /*
+                if(Settings.reversed.value)
+                {
+                    leftSpeed = speeds[1]
+                    rightSpeed = speeds[0]
+                }
+                */
+
+                println(String.format("Left Speed %f Right Speed %f", leftSpeed, rightSpeed))
+                println(String.format("Pose X %f Pose Y %f Theta %f", followerPose.translation.x,
+                    followerPose.translation.y, followerPose.rotation.radians))
+                val angularSpeed = (rightSpeed - leftSpeed ) / Settings.robotWidth.value
+                val linearSpeed = (rightSpeed + leftSpeed) / 2.0
+                val xIncrement = linearSpeed * dt * cos(followerPose.rotation.radians)
+                val yIncrement = linearSpeed * dt * sin(followerPose.rotation.radians)
+                var angIncrement = angularSpeed*dt
+                if(followerPose.rotation.radians + angIncrement > PI)
+                {
+                    angIncrement -= 2*PI
+                }
+                else if(followerPose.rotation.radians + angIncrement < -PI)
+                {
+                    angIncrement += 2*PI
+                }
+                val newPose = Pose2d(
+                    followerPose.translation.x + xIncrement,
+                    followerPose.translation.y + yIncrement,
+                    Rotation2d(followerPose.rotation.radians + angIncrement)
+                )
+                followerPose = newPose
+                t += dt
+                ui { updateFollowerPose(followerPose) }
+                // TODO: Compare final pose and current pose and set isReached
+                val poseDiff = targetPose.poseMeters.minus(followerPose)
+                if(abs(poseDiff.translation.x) < translateAccuracy && abs(poseDiff.translation.y) < translateAccuracy && abs(poseDiff.rotation.radians) < translateAccuracy)
+                {
+                    isReached = true
+                    println("Pose reached")
+                }
+                if (t > duration * 2 || isReached == true)
+                {
+                    println(String.format("APPC completed in %f", t))
+                    timer.purge()
+                    timer.cancel()
+                }
+            }
+            ui { followerSeries.data.clear() }
         }
-
-        ui { followerSeries.data.clear() }
-
 
     }
 
