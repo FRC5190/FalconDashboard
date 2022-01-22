@@ -6,8 +6,10 @@ import org.ghrobotics.falcondashboard.Properties;
 /** Add your docs here. */
 public class AdaptivePurePursuitController {
     private static int m_lastClosestPointIndex;
-
+    private static Translation2d m_lookahead;
+    private static double deltaAngle;
     public AdaptivePurePursuitController() {
+        deltaAngle = 0;
 
     }
 
@@ -18,8 +20,8 @@ public class AdaptivePurePursuitController {
         if (heading == 0.0) {
             heading = epsilon;
         }
-        Translation2d lookahead = calculateLookahead(trajectory, currentRobotPose);
-        double curvature = calculateCurvature(currentRobotPose, lookahead, heading);
+        m_lookahead = calculateLookahead(trajectory, currentRobotPose);
+        double curvature = calculateCurvature(currentRobotPose, m_lookahead, heading);
         double targetVel = getPointVelocity(trajectory, m_lastClosestPointIndex);
         byte negate = 1;
         if (reversed == true) {
@@ -107,9 +109,28 @@ public class AdaptivePurePursuitController {
     public static double calcDot(Translation2d firstVec, Translation2d secondVec) {
         return firstVec.getX() * secondVec.getX() + firstVec.getY() * secondVec.getY();
     }
+    
+    private static double calculateCurvature1619(Pose2d currentRobotPose, double heading){
+
+        Translation2d delta = m_lookahead.minus(currentRobotPose.getTranslation());
+        double magnitude = Math.sqrt(Math.pow(delta.getX(), 2) + Math.pow(delta.getY(), 2));
+        double angle = Math.toDegrees(Math.atan2(delta.getY(), Math.abs(delta.getX()) > 0.3 ? delta.getX() : 0.3 * Math.signum(delta.getX())));
+
+        deltaAngle = heading - angle;
+
+        if (Math.abs(deltaAngle) > 180) deltaAngle = -Math.signum(deltaAngle) * (360 - Math.abs(deltaAngle));
+
+        double curvature = (Math.abs(deltaAngle) > 90 ? Math.signum(deltaAngle) : Math.sin(Math.toRadians(deltaAngle))) / (magnitude / 2);
+
+        if (Double.isInfinite(curvature) || Double.isNaN(curvature)) return 0.0;
+
+        return curvature;
+
+    }
 
     private static double calculateCurvature(
             Pose2d currentRobotPose, Translation2d lookahead, double heading) {
+
         double a = -Math.tan(heading);
         byte b = 1;
         double c =
@@ -126,6 +147,8 @@ public class AdaptivePurePursuitController {
         System.out.println("CURV : " + curvature * side);
         return curvature * side;
     }
+
+    
 
     public static int findClosestPointIndex(Trajectory trajectory, Pose2d point, int lastIndex) {
         Translation2d lastPose = getPointPose(trajectory, lastIndex).getTranslation();
