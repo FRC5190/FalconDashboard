@@ -1,0 +1,19 @@
+/* Generic */
+
+.root {
+    -fx-background-color: white;
+}
+
+/* TAB PANE */
+
+.jfx-tab-pane .tab-header-background {
+    -fx-background-color: #690a0f;
+}
+
+.jfx-tab-pane .headers-region > .tab > .jfx-rippler {
+    -jfx-rippler-fill: #bbb;
+}
+
+.jfx-tab-pane .tab-selected-line {
+    -fx-background-color: #bbb;
+}
